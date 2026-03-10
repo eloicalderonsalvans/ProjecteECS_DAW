@@ -117,6 +117,7 @@
                 <a href="{{ route('fixatges.index') }}">Fitxar</a>
                 <a href="{{ route('horaris.index') }}">Horaris</a>
                 <a href="{{ route('absencies.index') }}">Absències</a>
+                <a href="{{ route('torns.index') }}">Torns</a>
             </div>
         </div>
         

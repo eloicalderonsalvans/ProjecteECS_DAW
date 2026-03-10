@@ -11,7 +11,8 @@ class TornController extends Controller
      */
     public function index()
     {
-        //
+        $torns = \App\Models\Torn::all();
+        return view('torn.index', compact('torns'));
     }
 
     /**
@@ -19,7 +20,7 @@ class TornController extends Controller
      */
     public function create()
     {
-        //
+        return view('torn.create');
     }
 
     /**
@@ -27,7 +28,19 @@ class TornController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nom' => 'required|string|max:255|unique:torns,nom',
+            'descripcio' => 'nullable|string|max:255',
+            'color'      => 'required|string|max:7', // Per al codi HEX (#000000)
+        ]);
+
+        $torn = new \App\Models\Torn();
+        $torn->nom = $request->nom;
+        $torn->descripcio = $request->descripcio;
+        $torn->color = $request->color;
+        $torn->save();
+
+        return redirect()->route('torns.index')->with('success', 'Torn creat correctament!');
     }
 
     /**
@@ -43,7 +56,8 @@ class TornController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $torn = \App\Models\Torn::findOrFail($id);
+        return view('torn.edit', compact('torn'));
     }
 
     /**
@@ -51,7 +65,20 @@ class TornController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $torn = \App\Models\Torn::findOrFail($id);
+
+        $request->validate([
+            'nom' => 'required|string|max:255|unique:torns,nom,' . $id,
+            'descripcio' => 'nullable|string|max:255',
+            'color'      => 'required|string|max:7',
+        ]);
+
+        $torn->nom = $request->nom;
+        $torn->descripcio = $request->descripcio;
+        $torn->color = $request->color;
+        $torn->save();
+
+        return redirect()->route('torns.index')->with('success', 'Torn actualitzat correctament!');
     }
 
     /**
@@ -59,6 +86,9 @@ class TornController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $torn = \App\Models\Torn::findOrFail($id);
+        $torn->delete();
+
+        return redirect()->route('torns.index')->with('success', 'Torn eliminat correctament!');
     }
 }

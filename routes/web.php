@@ -6,6 +6,7 @@ use App\Http\Controllers\HorariController;
 use App\Http\Controllers\FixatgeController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TornController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('fixatges', FixatgeController::class);
     Route::resource('horaris', HorariController::class);
     Route::resource('absencies', AbsenciaController::class);
+    Route::resource('torns', TornController::class);
 });
 
 require __DIR__.'/auth.php';
