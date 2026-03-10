@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Department;
 
 class DepartmentController extends Controller
 {
@@ -11,7 +12,11 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        //
+        // Obtenim tots els departaments
+        $department = \App\Models\Department::all();
+
+        // Retornem la vista enviant la variable 'department'
+        return view('department.index', compact('department'));
     }
 
     /**
@@ -19,7 +24,7 @@ class DepartmentController extends Controller
      */
     public function create()
     {
-        //
+        return view('department.create');
     }
 
     /**
@@ -27,38 +32,55 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // 1. Validació de dades
+        $request->validate([
+            'nom' => 'required|string|max:255|unique:department,nom',
+            'descripcio' => 'nullable|string|max:255',
+        ]);
+
+        // 2. Creació del registre
+        $dept = new Department();
+        $dept->nom = $request->nom;
+        $dept->descripcio = $request->descripcio;
+        $dept->save();
+
+        // 3. Redirecció amb missatge d'èxit
+        return redirect()->route('department.index')->with('success', 'Departament creat correctament!');
+    }
+
+   public function edit($id)
+    {
+        $dept = Department::findOrFail($id);
+        return view('department.edit', compact('dept'));
     }
 
     /**
-     * Display the specified resource.
+     * Actualitza el departament a la base de dades.
      */
-    public function show(string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $dept = Department::findOrFail($id);
+
+        $request->validate([
+            'nom' => 'required|string|max:255|unique:department,nom,' . $id,
+            'descripcio' => 'nullable|string|max:255',
+        ]);
+
+        $dept->nom = $request->nom;
+        $dept->descripcio = $request->descripcio;
+        $dept->save();
+
+        return redirect()->route('departments.index')->with('success', 'Departament actualitzat correctament!');
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Elimina un departament.
      */
-    public function edit(string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $dept = Department::findOrFail($id);
+        $dept->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('departments.index')->with('success', 'Departament eliminat correctament!');
     }
 }

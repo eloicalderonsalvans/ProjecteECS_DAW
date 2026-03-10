@@ -18,9 +18,13 @@
             <h1 class="text-2xl font-bold text-gray-800">Usuaris del Sistema</h1>
         </div>
 
-        <a href="{{ route('users.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded shadow-md hover:bg-blue-700 transition-colors">
-            + Nou Usuari
-        </a>
+        <a href="{{ route('users.create') }}" 
+                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm shadow-sm transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Nou Usuari
+                </a>
     </div>
        <table class="w-full text-left border-collapse">
     <thead>
