@@ -26,14 +26,15 @@ class User extends Authenticatable
     }
 
     protected $fillable = [
-       'nom',
+        'nom',
         'cognom',
+        'DNI',
+        'department_id',
+        'role',
         'email',
         'contrassenya',
-        'DNI',
         'data_alta',
         'actiu',
-        'department_id',
     ];
 
     /**
