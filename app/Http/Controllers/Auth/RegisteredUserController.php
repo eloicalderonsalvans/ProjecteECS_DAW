@@ -36,10 +36,15 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'user',
+            'nom'           => $request->name,
+            'email'         => $request->email,
+            'contrassenya'  => Hash::make($request->password),
+            'role'          => 'user',
+            'actiu'         => 1, // Valor por defecto para evitar errores
+            'data_alta'     => now(),
+            // Si estos campos son obligatorios en tu BD, dales un valor vacío por ahora:
+            'cognom'        => '', 
+            'DNI'           => '',
         ]);
 
         event(new Registered($user));
