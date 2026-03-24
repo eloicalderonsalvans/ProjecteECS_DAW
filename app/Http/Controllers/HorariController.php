@@ -81,18 +81,22 @@ class HorariController extends Controller
 
         $inici = \Carbon\Carbon::parse($request->data_inici);
         $fi    = \Carbon\Carbon::parse($request->data_fi);
+        $ignorarCapsSetmana = $request->boolean('ignorar_caps_setmana');
 
         // 3. Creació massiva (dia a dia)
         while ($inici <= $fi) {
-            Horari::updateOrCreate(
-                [
-                    'user_id' => $request->user_id,
-                    'data'    => $inici->format('Y-m-d'),
-                ],
-                [
-                    'torn_id' => $request->torn_id,
-                ]
-            );
+            // Si l'opció està activa, saltem dissabtes (6) i diumenges (0)
+            if (!$ignorarCapsSetmana || !in_array($inici->dayOfWeek, [0, 6])) {
+                Horari::updateOrCreate(
+                    [
+                        'user_id' => $request->user_id,
+                        'data'    => $inici->format('Y-m-d'),
+                    ],
+                    [
+                        'torn_id' => $request->torn_id,
+                    ]
+                );
+            }
             $inici->addDay();
         }
 

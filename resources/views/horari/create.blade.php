@@ -109,6 +109,27 @@
                 </div>
             </div>
 
+            <!-- Ignorar caps de setmana -->
+            <label for="ignorar_caps_setmana" style="display:flex; align-items:center; justify-content:space-between; padding:1rem; background:#fffbeb; border:1px solid #fcd34d; border-radius:1rem; cursor:pointer; gap:1rem;">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                    <div style="padding:0.5rem; background:#fef3c7; border-radius:0.75rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" style="width:1.25rem;height:1.25rem;color:#d97706;" fill="none" viewBox="0 0 24 24" stroke="#d97706">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p style="font-size:0.875rem; font-weight:700; color:#78350f; margin:0;">Ignorar caps de setmana</p>
+                        <p style="font-size:0.75rem; color:#92400e; margin:0; margin-top:2px;">No s'assignaran torns els dissabtes ni els diumenges</p>
+                    </div>
+                </div>
+                <input type="checkbox"
+                       name="ignorar_caps_setmana"
+                       id="ignorar_caps_setmana"
+                       value="1"
+                       {{ old('ignorar_caps_setmana') ? 'checked' : '' }}
+                       style="width:1.25rem; height:1.25rem; accent-color:#f59e0b; cursor:pointer; flex-shrink:0;">
+            </label>
+
             <!-- Botó Guardar -->
             <div class="pt-6">
                 <button type="submit" class="w-full flex justify-center items-center px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl shadow-xl shadow-blue-500/20 transition-all hover:-translate-y-1 active:scale-[0.98]">
@@ -131,8 +152,9 @@
         <div>
             <h4 class="text-blue-900 font-bold mb-1">Informació d'assignació</h4>
             <p class="text-blue-700/80 text-sm font-medium leading-relaxed">
-                Aquesta acció crearà un calendari de torns per a l'empleat seleccionat en el rang de dates indicat. 
+                Aquesta acció crearà un calendari de torns per a l'empleat seleccionat en el rang de dates indicat.
                 Si l'empleat ja té un torn assignat en aquestes dates, aquest s'actualitzarà amb el nou.
+                Activa l'opció de <strong>"Ignorar caps de setmana"</strong> per saltar automàticament els dissabtes i diumenges.
             </p>
         </div>
     </div>
