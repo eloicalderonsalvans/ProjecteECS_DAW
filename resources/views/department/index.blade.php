@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="ca">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Llistat de Departaments</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-8">
+@extends('layouts.app')
 
-    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+@section('content')
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
         
         <div class="flex items-center justify-between mb-8 border-b pb-4">
             <div>
@@ -16,12 +9,7 @@
             </div>
 
             <div class="flex items-center space-x-3">
-                <a href="{{ route('dashboard') }}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
-                    Inici
-                </a>
+                
 
                 <a href="{{ route('departments.create') }}" 
                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm shadow-sm transition-colors">
@@ -83,6 +71,4 @@
             </table>
         </div>
     </div>
-
-</body>
-</html>
+@endsection

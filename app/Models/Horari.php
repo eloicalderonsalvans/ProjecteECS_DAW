@@ -20,7 +20,7 @@ class Horari extends Model
         'torn_id',
         'hora_entrada',
         'hora_sortida',
-        'dia_setmana',
+        'data',
     ];
 
     /*

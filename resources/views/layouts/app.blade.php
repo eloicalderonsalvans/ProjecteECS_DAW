@@ -6,20 +6,25 @@
     <title>Gestor de personal - Fitxaring</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
+    <!-- Permet injectar CSS o scripts específics de cada vista -->
+    @yield('styles')
+    @yield('scripts_head')
+    
     <style>
         :root {
-            --bg-body: #f3f4f6;
+            --bg-body: #f8fafc;
             --bg-nav: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --primary-light: #e0e7ff;
-            --primary-dark: #4338ca;
-            --danger-light: #fee2e2;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --primary-dark: #1e40af;
             --danger: #ef4444;
+            --danger-light: #fef2f2;
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
             margin: 0;
@@ -28,81 +33,90 @@
 
         /* Barra de navegación */
         .navbar {
-            background-color: var(--bg-nav);
-            padding: 1rem 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.75rem 2rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 1rem;
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            border-b: 1px solid rgba(226, 232, 240, 0.8);
         }
 
         .nav-group {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
+            gap: 2rem;
         }
 
         /* Insignia del usuario */
         .user-badge {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-weight: 600;
-            font-size: 0.9rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
         }
 
         /* Enlaces de navegación */
         .nav-links {
             display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+            gap: 0.25rem;
         }
 
         .nav-links a {
             text-decoration: none;
             color: var(--text-muted);
-            font-weight: 500;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s ease;
-            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.5rem 0.85rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9rem;
         }
 
         .nav-links a:hover {
-            background-color: var(--bg-body);
-            color: var(--text-main);
+            color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+            background-color: var(--primary-light);
         }
 
         /* Botón de salir */
         .btn-logout {
-            color: var(--danger);
+            color: var(--text-muted);
             text-decoration: none;
-            font-weight: 500;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s ease;
-            font-size: 0.95rem;
-            display: inline-block;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f1f5f9;
         }
 
         .btn-logout:hover {
+            color: var(--danger);
             background-color: var(--danger-light);
         }
 
         /* Contenedor principal */
         .main-content {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: #ffffff;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            max-width: 1280px;
+            margin: 6rem auto 2rem;
+            padding: 0 2rem;
         }
     </style>
 </head>
@@ -130,5 +144,8 @@
     <main class="main-content">
         @yield('content') {{ $slot ?? '' }} 
     </main>
+
+    <!-- Injecció per als scripts (ex: FullCalendar a horaris) -->
+    @yield('scripts_body')
 </body>
 </html>

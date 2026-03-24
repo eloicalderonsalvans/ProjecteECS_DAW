@@ -29,6 +29,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('horaris', HorariController::class);
     Route::resource('absencies', AbsenciaController::class);
     Route::resource('torns', TornController::class);
+
+    // Ruta per obtenir els esdeveniments de l'usuari (FullCalendar)
+    Route::get('/api/horaris/user/{userId}', [HorariController::class, 'getEvents']);
 });
 
 require __DIR__.'/auth.php';

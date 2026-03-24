@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="ca">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Departament</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-8">
+@extends('layouts.app')
 
-    <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+@section('content')
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
         
         <div class="flex items-center justify-between mb-8 border-b pb-4">
             <h1 class="text-2xl font-bold text-gray-800">Nou Departament</h1>
@@ -56,6 +49,4 @@
             </div>
         </form>
     </div>
-
-</body>
-</html>
+@endsection
