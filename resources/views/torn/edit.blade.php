@@ -45,6 +45,24 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Hores del torn --}}
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="hora_entrada" class="block text-sm font-bold text-gray-700 mb-1">Hora d'Entrada</label>
+                        <input type="time" name="hora_entrada" id="hora_entrada" 
+                               value="{{ old('hora_entrada', $torn->hora_entrada ? \Carbon\Carbon::parse($torn->hora_entrada)->format('H:i') : '') }}" 
+                               required
+                               class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                    </div>
+                    <div>
+                        <label for="hora_sortida" class="block text-sm font-bold text-gray-700 mb-1">Hora de Sortida</label>
+                        <input type="time" name="hora_sortida" id="hora_sortida" 
+                               value="{{ old('hora_sortida', $torn->hora_sortida ? \Carbon\Carbon::parse($torn->hora_sortida)->format('H:i') : '') }}" 
+                               required
+                               class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                    </div>
+                </div>
             </div>
 
             <div class="mt-8 flex justify-end space-x-3 border-t pt-6">

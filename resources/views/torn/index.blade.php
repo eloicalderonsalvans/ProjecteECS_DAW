@@ -33,6 +33,8 @@
                         <th class="px-6 py-3">ID</th>
                         <th class="px-6 py-3">Color</th>
                         <th class="px-6 py-3">Nom del Torn</th>
+                        <th class="px-6 py-3">Hora Entrada</th>
+                        <th class="px-6 py-3">Hora Sortida</th>
                         <th class="px-6 py-3">Descripció</th>
                         <th class="px-6 py-3 text-right">Accions</th>
                     </tr>
@@ -48,6 +50,12 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold uppercase">
                                 {{ $torn->nom }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-700">
+                                {{ $torn->hora_entrada ? \Carbon\Carbon::parse($torn->hora_entrada)->format('H:i') : '—' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-700">
+                                {{ $torn->hora_sortida ? \Carbon\Carbon::parse($torn->hora_sortida)->format('H:i') : '—' }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600">
                                 {{ $torn->descripcio ?? 'Sense descripció' }}
@@ -77,7 +85,7 @@
 
                     @if($torns->isEmpty())
                         <tr>
-                            <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                            <td colspan="7" class="px-6 py-10 text-center text-gray-500">
                                 No hi ha torns creats encara.
                             </td>
                         </tr>

@@ -24,6 +24,8 @@ class Torn extends Model
         'nom',
         'descripcio',
         'color',
+        'hora_entrada',
+        'hora_sortida',
     ];
 
     /**

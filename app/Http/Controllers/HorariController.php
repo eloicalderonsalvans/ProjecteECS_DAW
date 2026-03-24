@@ -68,23 +68,15 @@ class HorariController extends Controller
             'data_fi'    => 'required|date|after_or_equal:data_inici',
         ]);
 
-        // 2. Busquem el torn per saber el seu NOM (Matí, Tarda, Nit...)
+        // 2. Busquem el torn per obtenir les seves hores
         $torn = Torn::find($request->torn_id);
-        $nomTorn = strtolower($torn->nom); // Ho passem a minúscules per evitar errors
 
-        /**
-         * SIMULACIÓ D'HORARIS D'HOSPITAL
-         * Aquí definim les hores segons el nom del torn
-         */
-        [$hora_entrada, $hora_sortida] = match (true) {
-            str_contains($nomTorn, 'matí')  => ['08:00:00', '15:00:00'],
-            str_contains($nomTorn, 'tarda') => ['15:00:00', '22:00:00'],
-            str_contains($nomTorn, 'nit')   => ['22:00:00', '08:00:00'],
-            default                         => ['08:00:00', '17:00:00'], // Horari d'oficina per defecte
-        };
+        // Les hores venen directament del torn
+        $hora_entrada = $torn->hora_entrada;
+        $hora_sortida = $torn->hora_sortida;
 
         $inici = \Carbon\Carbon::parse($request->data_inici);
-        $fi = \Carbon\Carbon::parse($request->data_fi);
+        $fi    = \Carbon\Carbon::parse($request->data_fi);
 
         // 3. Creació massiva (dia a dia)
         while ($inici <= $fi) {
@@ -94,15 +86,13 @@ class HorariController extends Controller
                     'data'    => $inici->format('Y-m-d'),
                 ],
                 [
-                    'torn_id'      => $request->torn_id,
-                    'hora_entrada' => $hora_entrada,
-                    'hora_sortida' => $hora_sortida,
+                    'torn_id' => $request->torn_id,
                 ]
             );
             $inici->addDay();
         }
 
-        return redirect()->route('horaris.index')->with('success', 'Horaris hospitalaris assignats!');
+        return redirect()->route('horaris.index')->with('success', 'Horaris assignats correctament!');
     }
 
     /**

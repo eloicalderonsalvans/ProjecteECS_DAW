@@ -18,8 +18,6 @@ class Horari extends Model
     protected $fillable = [
         'user_id',
         'torn_id',
-        'hora_entrada',
-        'hora_sortida',
         'data',
     ];
 

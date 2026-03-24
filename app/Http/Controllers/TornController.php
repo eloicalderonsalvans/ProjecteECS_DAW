@@ -29,15 +29,19 @@ class TornController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nom' => 'required|string|max:255|unique:torns,nom',
-            'descripcio' => 'nullable|string|max:255',
-            'color'      => 'required|string|max:7', // Per al codi HEX (#000000)
+            'nom'          => 'required|string|max:255|unique:torns,nom',
+            'descripcio'   => 'nullable|string|max:255',
+            'color'        => 'required|string|max:7',
+            'hora_entrada' => 'required|date_format:H:i',
+            'hora_sortida' => 'required|date_format:H:i',
         ]);
 
         $torn = new \App\Models\Torn();
-        $torn->nom = $request->nom;
-        $torn->descripcio = $request->descripcio;
-        $torn->color = $request->color;
+        $torn->nom          = $request->nom;
+        $torn->descripcio   = $request->descripcio;
+        $torn->color        = $request->color;
+        $torn->hora_entrada = $request->hora_entrada;
+        $torn->hora_sortida = $request->hora_sortida;
         $torn->save();
 
         return redirect()->route('torns.index')->with('success', 'Torn creat correctament!');
@@ -68,14 +72,18 @@ class TornController extends Controller
         $torn = \App\Models\Torn::findOrFail($id);
 
         $request->validate([
-            'nom' => 'required|string|max:255|unique:torns,nom,' . $id,
-            'descripcio' => 'nullable|string|max:255',
-            'color'      => 'required|string|max:7',
+            'nom'          => 'required|string|max:255|unique:torns,nom,' . $id,
+            'descripcio'   => 'nullable|string|max:255',
+            'color'        => 'required|string|max:7',
+            'hora_entrada' => 'required|date_format:H:i',
+            'hora_sortida' => 'required|date_format:H:i',
         ]);
 
-        $torn->nom = $request->nom;
-        $torn->descripcio = $request->descripcio;
-        $torn->color = $request->color;
+        $torn->nom          = $request->nom;
+        $torn->descripcio   = $request->descripcio;
+        $torn->color        = $request->color;
+        $torn->hora_entrada = $request->hora_entrada;
+        $torn->hora_sortida = $request->hora_sortida;
         $torn->save();
 
         return redirect()->route('torns.index')->with('success', 'Torn actualitzat correctament!');

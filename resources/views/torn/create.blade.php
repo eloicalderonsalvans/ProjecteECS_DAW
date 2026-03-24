@@ -5,7 +5,6 @@
         
         <div class="flex items-center justify-between mb-8 border-b pb-4">
             <h1 class="text-2xl font-bold text-gray-800">Nou Torn</h1>
-            
         </div>
 
         @if ($errors->any())
@@ -41,7 +40,21 @@
                     <div class="flex items-center space-x-4">
                         <input type="color" name="color" id="color" value="{{ old('color', '#3b82f6') }}" 
                                class="h-10 w-20 border border-gray-300 rounded cursor-pointer">
-                        <span class="text-gray-500 text-sm italic italic">Aquest color servirà per diferenciar els torns al calendari.</span>
+                        <span class="text-gray-500 text-sm italic">Aquest color servirà per diferenciar els torns al calendari.</span>
+                    </div>
+                </div>
+
+                {{-- Hores del torn --}}
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="hora_entrada" class="block text-sm font-bold text-gray-700 mb-1">Hora d'Entrada</label>
+                        <input type="time" name="hora_entrada" id="hora_entrada" value="{{ old('hora_entrada') }}" required
+                               class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                    </div>
+                    <div>
+                        <label for="hora_sortida" class="block text-sm font-bold text-gray-700 mb-1">Hora de Sortida</label>
+                        <input type="time" name="hora_sortida" id="hora_sortida" value="{{ old('hora_sortida') }}" required
+                               class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-mono">
                     </div>
                 </div>
             </div>
