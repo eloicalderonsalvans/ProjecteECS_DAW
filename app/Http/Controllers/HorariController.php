@@ -29,12 +29,16 @@ class HorariController extends Controller
             ->get();
 
         // Transformem les dades al format que entén FullCalendar
+        // Les hores ara venen del torn, no de l'horari
         $events = $horaris->map(function ($h) {
+            $horaEntrada = $h->torn->hora_entrada ?? '08:00:00';
+            $horaSortida = $h->torn->hora_sortida ?? '17:00:00';
+
             return [
-                'id'    => $h->id,
-                'title' => $h->torn->nom ?? 'S/N',
-                'start' => $h->data . 'T' . $h->hora_entrada,
-                'end'   => $h->data . 'T' . $h->hora_sortida,
+                'id'              => $h->id,
+                'title'           => $h->torn->nom ?? 'S/N',
+                'start'           => $h->data . 'T' . $horaEntrada,
+                'end'             => $h->data . 'T' . $horaSortida,
                 'backgroundColor' => $h->torn->color ?? '#3788d8',
                 'borderColor'     => $h->torn->color ?? '#3788d8',
             ];
