@@ -19,6 +19,7 @@
             </div>
         </div>
 
+        <!-- Taula de llistat d'usuaris -->
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -35,6 +36,7 @@
                     @foreach ($users as $user)
                     <tr class="hover:bg-blue-50 transition-colors">
                         <td class="p-4">
+                            <!-- Enllaç al detall de l'usuari -->
                             <a href="{{ route('users.show', $user->id) }}" class="text-blue-600 font-semibold hover:text-blue-800 hover:underline">
                                 {{ $user->nom }} {{ $user->cognom }}
                             </a>
@@ -45,12 +47,14 @@
                             {{ $user->departament->nom ?? 'Sense assignar' }}
                         </td>
                         <td class="p-4 text-center">
+                            <!-- Badge d'estat: verd si està actiu, vermell si no -->
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->actiu ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                 {{ $user->actiu ? 'Actiu' : 'Inactiu' }}
                             </span>
                         </td>
                         <td class="p-4">
                             <div class="flex justify-end gap-2">
+                                <!-- Botons d'acció: Editar i Eliminar -->
                                 <a href="{{ route('users.edit', $user->id) }}" 
                                    class="inline-flex items-center px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-md transition-colors shadow-sm">
                                     Editar

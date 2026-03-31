@@ -2,45 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Horari;
-use App\Models\User;
 use App\Models\Torn;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class HorariController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostra la llista principal d'horaris (Calendar).
+     * Carrega els usuaris per al selector i els torns per a la llegenda.
      */
     public function index()
     {
-        // Necessitem els usuaris pel desplegable i els torns per la llegenda
+        // Necessitem els usuaris pel desplegable i els torns per la llegenda del calendari
         $users = User::all();
         $torns = Torn::all();
 
         return view('horari.index', compact('users', 'torns'));
     }
 
+    /**
+     * Obté els esdeveniments d'un usuari en format JSON per a FullCalendar.
+     *
+     * @param  int  $userId  ID de l'usuari seleccionat.
+     */
     public function getEvents($userId)
     {
-        // Busquem els horaris de l'usuari seleccionat i carreguem la relació amb el torn
+        // Busquem els horaris de l'usuari seleccionat i carreguem la relació amb el torn per obtenir colors i hores
         $horaris = Horari::where('user_id', $userId)
             ->with('torn')
             ->get();
 
-        // Transformem les dades al format que entén FullCalendar
-        // Les hores ara venen del torn, no de l'horari
+        // Transformem les dades al format que entén la llibreria FullCalendar
+        // Nota: Les hores d'inici i final es defineixen al torn, no a la taula d'horaris.
         $events = $horaris->map(function ($h) {
             $horaEntrada = $h->torn->hora_entrada ?? '08:00:00';
             $horaSortida = $h->torn->hora_sortida ?? '17:00:00';
 
             return [
-                'id'              => $h->id,
-                'title'           => $h->torn->nom ?? 'S/N',
-                'start'           => $h->data . 'T' . $horaEntrada,
-                'end'             => $h->data . 'T' . $horaSortida,
+                'id' => $h->id,
+                'title' => $h->torn->nom ?? 'S/N',
+                'start' => $h->data.'T'.$horaEntrada,
+                'end' => $h->data.'T'.$horaSortida,
                 'backgroundColor' => $h->torn->color ?? '#3788d8',
-                'borderColor'     => $h->torn->color ?? '#3788d8',
+                'borderColor' => $h->torn->color ?? '#3788d8',
             ];
         });
 
@@ -48,55 +54,53 @@ class HorariController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Mostra el formulari per assignar nous horaris.
      */
     public function create()
     {
-       // Passem els usuaris i torns perquè el formulari pugui omplir els <select> i els <input radio>
-       $users = User::all();
-       $torns = Torn::all();
+        // Passem els usuaris i torns perquè el formulari pugui mostrar les opcions de selecció
+        $users = User::all();
+        $torns = Torn::all();
 
-       return view('horari.create', compact('users', 'torns'));
+        return view('horari.create', compact('users', 'torns'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guarda les assignacions d'horari a la base de dades (assignació massiva per rang de dates).
      */
     public function store(Request $request)
     {
-        // 1. Validació de dades
+        // 1. Validació de les dades d'entrada
         $request->validate([
-            'user_id'    => 'required|exists:users,id',
-            'torn_id'    => 'required|exists:torns,id',
+            'user_id' => 'required|exists:users,id',
+            'torn_id' => 'required|exists:torns,id',
             'data_inici' => 'required|date',
-            'data_fi'    => 'required|date|after_or_equal:data_inici',
+            'data_fi' => 'required|date|after_or_equal:data_inici',
         ]);
 
-        // 2. Busquem el torn per obtenir les seves hores
+        // 2. Busquem el torn per obtenir les seves hores i propietats
         $torn = Torn::find($request->torn_id);
 
-        // Les hores venen directament del torn
-        $hora_entrada = $torn->hora_entrada;
-        $hora_sortida = $torn->hora_sortida;
-
         $inici = \Carbon\Carbon::parse($request->data_inici);
-        $fi    = \Carbon\Carbon::parse($request->data_fi);
+        $fi = \Carbon\Carbon::parse($request->data_fi);
         $ignorarCapsSetmana = $request->boolean('ignorar_caps_setmana');
 
-        // 3. Creació massiva (dia a dia)
+        // 3. Creació massiva dia a dia en el rang especificat
         while ($inici <= $fi) {
-            // Si l'opció està activa, saltem dissabtes (6) i diumenges (0)
-            if (!$ignorarCapsSetmana || !in_array($inici->dayOfWeek, [0, 6])) {
+            // Si l'opció "ignorar caps de setmana" està activa, saltem dissabtes (6) i diumenges (0)
+            if (! $ignorarCapsSetmana || ! in_array($inici->dayOfWeek, [0, 6])) {
+                // Utilitzem updateOrCreate per evitar duplicats per al mateix dia i usuari
                 Horari::updateOrCreate(
                     [
                         'user_id' => $request->user_id,
-                        'data'    => $inici->format('Y-m-d'),
+                        'data' => $inici->format('Y-m-d'),
                     ],
                     [
                         'torn_id' => $request->torn_id,
                     ]
                 );
             }
+            // Avancem al següent dia
             $inici->addDay();
         }
 
@@ -104,31 +108,23 @@ class HorariController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Mètodes de recurs estàndard (actualment no implementats).
+     * Es mantenen segons l'estructura de rutes resource.
      */
     public function show(string $id)
-    {
-        //
+    { /* No utilitzat */
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
-    {
-        //
+    { /* No utilitzat */
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
-    {
-        //
+    { /* No utilitzat */
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una assignació d'horari específica (crida AJAX des del calendari).
      */
     public function destroy($id)
     {

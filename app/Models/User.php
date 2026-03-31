@@ -15,16 +15,17 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
+     * Sobreescribim el mètode per indicar quina columna conté la contrasenya.
+     * Per defecte Laravel busca 'password'.
      */
-
     public function getAuthPassword()
     {
         return $this->contrassenya;
     }
 
+    /**
+     * Atributs assignables (Mass Assignment).
+     */
     protected $fillable = [
         'nom',
         'cognom',
@@ -38,9 +39,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * Atributs ocults en la serialització (JSON, etc).
      */
     protected $hidden = [
         'contrassenya',
@@ -48,19 +47,27 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Càstings de tipus per a atributs específics.
      */
     protected function casts(): array
     {
         return [
             'data_alta' => 'date',
             'actiu' => 'boolean',
-            'contrassenya' => 'hashed',
+            'contrassenya' => 'hashed', // Laravel farà el hash automàticament en guardar
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | RELACIONS
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Relació amb el Departament.
+     * Un usuari pertany a un departament.
+     */
     public function departament(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id');
@@ -68,6 +75,7 @@ class User extends Authenticatable
 
     /**
      * Relació amb Absències.
+     * Un usuari pot tenir moltes absències registrades.
      */
     public function absencies(): HasMany
     {
@@ -75,7 +83,8 @@ class User extends Authenticatable
     }
 
     /**
-     * Relació amb Horaris (recorda que al diagrama deies "id_usuari").
+     * Relació amb Horaris.
+     * Un usuari té múltiples assignacions d'horari al calendari.
      */
     public function horaris(): HasMany
     {
@@ -83,7 +92,8 @@ class User extends Authenticatable
     }
 
     /**
-     * Relació amb Fixatges.
+     * Relació amb Fixatges (Clock-in/out).
+     * Un usuari té molts registres de fitxatge.
      */
     public function fixatges(): HasMany
     {

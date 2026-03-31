@@ -2,25 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Department;
+use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostra la llista de tots els departaments de l'empresa.
      */
     public function index()
     {
-        // Obtenim tots els departaments
+        // Obtenim tots els departaments des del Model
         $department = \App\Models\Department::all();
 
-        // Retornem la vista enviant la variable 'department'
+        // Retornem la vista amb la col·lecció de departaments
         return view('department.index', compact('department'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Mostra el formulari per registrar un nou departament.
      */
     public function create()
     {
@@ -28,41 +28,47 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guarda el nou departament a la base de dades.
      */
     public function store(Request $request)
     {
-        // 1. Validació de dades
+        // 1. Validació de dades: El nom del departament ha de ser únic
         $request->validate([
             'nom' => 'required|string|max:255|unique:department,nom',
             'descripcio' => 'nullable|string|max:255',
         ]);
 
-        // 2. Creació del registre
-        $dept = new Department();
+        // 2. Creació del registre utilitzant Eloquent
+        $dept = new Department;
         $dept->nom = $request->nom;
         $dept->descripcio = $request->descripcio;
         $dept->save();
 
-        // 3. Redirecció amb missatge d'èxit
+        // 3. Redirecció amb missatge de confirmació
         return redirect()->route('department.index')->with('success', 'Departament creat correctament!');
     }
 
-   public function edit($id)
+    /**
+     * Mostra el formulari per editar un departament existent.
+     */
+    public function edit($id)
     {
+        // Cerquem el departament per ID
         $dept = Department::findOrFail($id);
+
         return view('department.edit', compact('dept'));
     }
 
     /**
-     * Actualitza el departament a la base de dades.
+     * Actualitza les dades del departament a la base de dades.
      */
     public function update(Request $request, $id)
     {
         $dept = Department::findOrFail($id);
 
+        // Validació: Permetem mantenir el mateix nom si és el mateix registre
         $request->validate([
-            'nom' => 'required|string|max:255|unique:department,nom,' . $id,
+            'nom' => 'required|string|max:255|unique:department,nom,'.$id,
             'descripcio' => 'nullable|string|max:255',
         ]);
 

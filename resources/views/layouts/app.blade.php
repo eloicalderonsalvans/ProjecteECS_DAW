@@ -121,9 +121,13 @@
     </style>
 </head>
 <body>
+    <!-- Barra de navegació principal -->
     <nav class="navbar">
         <div class="nav-group">
+            <!-- Nom de l'usuari autenticat -->
             <span class="user-badge">{{ Auth::user()->nom }}</span>
+            
+            <!-- Enllaços de navegació a les diferents seccions -->
             <div class="nav-links">
                 <a href="{{ route('dashboard') }}">Inici</a>
                 <a href="{{ route('users.index') }}">Usuaris</a>
@@ -135,17 +139,19 @@
             </div>
         </div>
         
+        <!-- Botó de tancar sessió (Logout) -->
         <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
             @csrf
             <a href="#" class="btn-logout" onclick="event.preventDefault(); this.closest('form').submit();">Sortir</a>
         </form>
     </nav>
 
+    <!-- Contingut principal injectat des de les vistes -->
     <main class="main-content">
         @yield('content') {{ $slot ?? '' }} 
     </main>
 
-    <!-- Injecció per als scripts (ex: FullCalendar a horaris) -->
+    <!-- Injecció de scripts específics per a vistes que ho necessitin (ex: FullCalendar o validadors JS) -->
     @yield('scripts_body')
 </body>
 </html>

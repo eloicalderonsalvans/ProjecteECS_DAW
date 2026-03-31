@@ -2,19 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Absencia extends Model
 {
-   use HasFactory;
+    use HasFactory;
 
-   
     protected $table = 'absencia';
 
     /**
-     * Atributs assignables segons la teva estructura de phpMyAdmin.
+     * Atributs assignables per a la gestió d'absències.
      */
     protected $fillable = [
         'user_id',

@@ -19,11 +19,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('contrassenya');
             $table->string('DNI')->unique();
-          //  $table->foreignId('department_id')
-            //  ->nullable() 
-              //->constrained('departments')
-              //->onDelete('set null');
-            
+            //  $table->foreignId('department_id')
+            //  ->nullable()
+            // ->constrained('departments')
+            // ->onDelete('set null');
+
             $table->date('data_alta');
             $table->boolean('actiu')->default(true); // Para "despedir" sin borrar datos
 

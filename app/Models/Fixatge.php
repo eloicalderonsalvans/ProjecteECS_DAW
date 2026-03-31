@@ -2,24 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Fixatge extends Model
 {
     use HasFactory;
-   
+
     protected $table = 'fixatges';
 
     /**
-     * Atributs assignables segons la teva estructura de phpMyAdmin.
-     *
+     * Atributs assignables per al registre de jornada laboral.
      */
     protected $fillable = [
         'user_id',
         'data',
-        'check',
+        'check',       // Indica si és entrada (true) o sortida (false)
         'ubicacio_x',
         'ubicacio_y',
         'dispositiu',
@@ -32,7 +31,7 @@ class Fixatge extends Model
     protected function casts(): array
     {
         return [
-            'data' => 'datetime', //
+            'data' => 'datetime',
             'check' => 'boolean',  // El tinyint(1) el tractem com a booleà
         ];
     }
@@ -44,8 +43,7 @@ class Fixatge extends Model
     */
 
     /**
-     * Relació amb l'Usuari.
-     * Cada fixatge pertany a un usuari a través de la clau silver 'user_id'.
+     * Relació amb l'Usuari que ha fet el fitxatge.
      */
     public function user(): BelongsTo
     {

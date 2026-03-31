@@ -7,15 +7,15 @@ use Illuminate\Http\Request;
 class FixatgeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Llista de fitxatges (Per implementar).
      */
     public function index()
     {
-        //
+        // Aquest controlador s'utilitzarà per a la gestió de fitxatges en el futur.
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Formulari per fitxar (Per implementar).
      */
     public function create()
     {
@@ -23,7 +23,7 @@ class FixatgeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guarda un nou fitxatge (Per implementar).
      */
     public function store(Request $request)
     {
@@ -31,7 +31,7 @@ class FixatgeController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Detall d'un fitxatge (Per implementar).
      */
     public function show(string $id)
     {
@@ -39,7 +39,7 @@ class FixatgeController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Editar un fitxatge (Per implementar).
      */
     public function edit(string $id)
     {
@@ -47,7 +47,7 @@ class FixatgeController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualitzar un fitxatge (Per implementar).
      */
     public function update(Request $request, string $id)
     {
@@ -55,7 +55,7 @@ class FixatgeController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar un fitxatge (Per implementar).
      */
     public function destroy(string $id)
     {
