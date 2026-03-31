@@ -23,7 +23,7 @@
         <div>
             <div class="flex items-center justify-between mb-2">
                 <label for="password" class="block text-sm font-bold text-slate-700 dark:text-slate-300">Contrasenya</label>
-                @if (Route::has('password.request'))
+                @if (\Illuminate\Support\Facades\Route::has('password.request'))
                     <a class="text-sm text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors" href="{{ route('password.request') }}">
                         He oblidat la contrasenya
                     </a>

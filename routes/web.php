@@ -36,6 +36,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('absencies', AbsenciaController::class);
     Route::resource('torns', TornController::class);
 
+    // --- RUTES PER A L'ELIMINACIÓ MASSIVA DE TORNS ---
+    Route::get('/horaris-delete', [HorariController::class, 'delete'])->name('horaris.delete');
+    Route::delete('/horaris-delete', [HorariController::class, 'destroyBatch'])->name('horaris.destroy-batch');
+
     // Ruta personalitzada per obtenir els esdeveniments de l'usuari (utilitzada per FullCalendar)
     Route::get('/api/horaris/user/{userId}', [HorariController::class, 'getEvents']);
 });

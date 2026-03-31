@@ -47,13 +47,23 @@
                     <p class="text-slate-500 font-medium mt-1">Consulta i gestiona els horaris dels empleats.</p>
                 </div>
 
-                <a href="{{ route('horaris.create') }}"
-                    class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:-translate-y-0.5 active:scale-95">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                    Assignar Torns
-                </a>
+                <div class="flex gap-4">
+                    <a href="{{ route('horaris.delete') }}"
+                        class="inline-flex items-center px-6 py-3 bg-white hover:bg-slate-50 text-red-600 border-2 border-red-100 hover:border-red-200 font-bold rounded-xl shadow-sm transition-all hover:-translate-y-0.5 active:scale-95">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Eliminar per Rang
+                    </a>
+
+                    <a href="{{ route('horaris.create') }}"
+                        class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:-translate-y-0.5 active:scale-95">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Assignar Torns
+                    </a>
+                </div>
             </div>
 
             <!-- Selector d'Usuari per carregar les seves dades al calendari -->

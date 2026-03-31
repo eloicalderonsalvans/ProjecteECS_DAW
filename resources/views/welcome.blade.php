@@ -94,7 +94,7 @@
 
                 <div
                     class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 animate-fade-in-up delay-300">
-                    @if (Route::has('login'))
+                    @if (\Illuminate\Support\Facades\Route::has('login'))
                         @auth
                             <a href="{{ url('/dashboard') }}"
                                 class="font-semibold text-base bg-blue-600 hover:bg-indigo-600 text-white px-8 py-3.5 rounded-full shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 hover:shadow-indigo-500/40 inline-flex items-center justify-center gap-2">

@@ -125,7 +125,7 @@
     <nav class="navbar">
         <div class="nav-group">
             <!-- Nom de l'usuari autenticat -->
-            <span class="user-badge">{{ Auth::user()->nom }}</span>
+            <span class="user-badge">{{ \Illuminate\Support\Facades\Auth::user()->nom }}</span>
             
             <!-- Enllaços de navegació a les diferents seccions -->
             <div class="nav-links">

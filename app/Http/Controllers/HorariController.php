@@ -124,6 +124,44 @@ class HorariController extends Controller
     }
 
     /**
+     * Mostra el formulari per eliminar horaris en un rang de dates (Vista de eliminació massiva).
+     */
+    public function delete()
+    {
+        // Obtenim tots els usuaris i torns per a que l'administrador pugui triar
+        $users = User::all();
+        $torns = Torn::all();
+
+        return view('horari.delete', compact('users', 'torns'));
+    }
+
+    /**
+     * Elimina les assignacions d'horari en un rang de dates especificat per a un usuari.
+     * Aquesta és l'acció que processa el formulari de "Eliminar per Rang".
+     */
+    public function destroyBatch(Request $request)
+    {
+        // 1. Validació de les dades d'entrada (Usuari, Data Inici i Data Fi)
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'data_inici' => 'required|date',
+            'data_fi' => 'required|date|after_or_equal:data_inici',
+        ]);
+
+        // 2. Cercar i eliminar tots els registres d'horari que coincideixin amb l'usuari i el rang de dates
+        $deletedCount = Horari::where('user_id', $request->user_id)
+            ->whereBetween('data', [$request->data_inici, $request->data_fi])
+            ->delete();
+
+        // 3. Retornar a l'índex amb un missatge d'èxit o informació segons el resultat
+        if ($deletedCount > 0) {
+            return redirect()->route('horaris.index')->with('success', "S'han eliminat $deletedCount torns correctament.");
+        }
+
+        return redirect()->route('horaris.index')->with('info', "No s'ha trobat cap torn per eliminar en aquest rang per a l'usuari seleccionat.");
+    }
+
+    /**
      * Elimina una assignació d'horari específica (crida AJAX des del calendari).
      */
     public function destroy($id)
