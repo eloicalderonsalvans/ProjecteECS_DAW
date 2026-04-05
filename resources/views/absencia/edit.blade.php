@@ -58,9 +58,19 @@
                         @foreach($aprovadors as $aprovador)
                             @php $nomComplet = $aprovador->nom . ' ' . $aprovador->cognom; @endphp
                             <option value="{{ $nomComplet }}" {{ old('aprobat_per', $absencia->aprobat_per) == $nomComplet ? 'selected' : '' }}>
-                                {{ $nomComplet }} ({{ $aprovador->rol }})
+                                {{ $nomComplet }} ({{ $aprovador->role }})
                             </option>
                         @endforeach
+                    </select>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="estat" class="block text-sm font-bold text-gray-700 mb-1">Estat</label>
+                    <select name="estat" id="estat" 
+                            class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
+                        <option value="pendent" {{ old('estat', $absencia->estat) == 'pendent' ? 'selected' : '' }}>⏳ Pendent</option>
+                        <option value="aprovada" {{ old('estat', $absencia->estat) == 'aprovada' ? 'selected' : '' }}>✅ Aprovada</option>
+                        <option value="rebutjada" {{ old('estat', $absencia->estat) == 'rebutjada' ? 'selected' : '' }}>❌ Rebutjada</option>
                     </select>
                 </div>
 

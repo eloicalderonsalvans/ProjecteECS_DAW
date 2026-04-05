@@ -16,10 +16,20 @@ Route::get('/', function () {
 
 // Ruta del Dashboard: Requereix estar autenticat i haver verificat l'email
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $user = auth()->user();
+    $data = [];
+
+    // Si l'usuari és admin, carreguem el comptador d'absències pendents
+    if ($user->isAdmin()) {
+        $data['absenciesPendents'] = \App\Models\Absencia::where('estat', 'pendent')->count();
+    }
+
+    return view('dashboard', $data);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Grup de rutes protegides pel middleware 'auth'
+// =====================================================================
+// RUTES ACCESSIBLES PER A TOTS ELS USUARIS AUTENTICATS
+// =====================================================================
 Route::middleware('auth')->group(function () {
 
     // Gestió del Perfil d'usuari
@@ -27,21 +37,40 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // --- LES TEVES RUTES DE GESTIÓ (Resources) ---
-    // Laravel crea automàticament les rutes per a index, create, store, show, edit, update i destroy
+    // --- CALENDARI (tots els usuaris poden veure el calendari) ---
+    Route::get('/horaris', [HorariController::class, 'index'])->name('horaris.index');
+    Route::get('/api/horaris/user/{userId}', [HorariController::class, 'getEvents']);
+
+    // --- ABSÈNCIES (funcionalitats d'usuari normal) ---
+    Route::get('/absencies', [AbsenciaController::class, 'index'])->name('absencies.index');
+    Route::get('/absencies/create', [AbsenciaController::class, 'create'])->name('absencies.create');
+    Route::post('/absencies', [AbsenciaController::class, 'store'])->name('absencies.store');
+    // L'usuari normal pot cancel·lar les seves pròpies absències pendents
+    Route::delete('/absencies/{absencia}', [AbsenciaController::class, 'destroy'])->name('absencies.destroy');
+});
+
+// =====================================================================
+// RUTES EXCLUSIVES PER A ADMINISTRADORS
+// =====================================================================
+Route::middleware(['auth', 'admin'])->group(function () {
+
+    // --- Gestió completa d'Usuaris, Departaments i Torns ---
     Route::resource('users', UserController::class);
     Route::resource('departments', DepartmentController::class);
-    Route::resource('fixatges', FixatgeController::class);
-    Route::resource('horaris', HorariController::class);
-    Route::resource('absencies', AbsenciaController::class);
     Route::resource('torns', TornController::class);
 
-    // --- RUTES PER A L'ELIMINACIÓ MASSIVA DE TORNS ---
+    // --- Gestió d'Horaris (assignar, crear, eliminar) ---
+    Route::get('/horaris/create', [HorariController::class, 'create'])->name('horaris.create');
+    Route::post('/horaris', [HorariController::class, 'store'])->name('horaris.store');
     Route::get('/horaris-delete', [HorariController::class, 'delete'])->name('horaris.delete');
     Route::delete('/horaris-delete', [HorariController::class, 'destroyBatch'])->name('horaris.destroy-batch');
+    Route::delete('/horaris/{horari}', [HorariController::class, 'destroy'])->name('horaris.destroy');
 
-    // Ruta personalitzada per obtenir els esdeveniments de l'usuari (utilitzada per FullCalendar)
-    Route::get('/api/horaris/user/{userId}', [HorariController::class, 'getEvents']);
+    // --- Gestió d'Absències (editar, aprovar, rebutjar) ---
+    Route::get('/absencies/{absencia}/edit', [AbsenciaController::class, 'edit'])->name('absencies.edit');
+    Route::put('/absencies/{absencia}', [AbsenciaController::class, 'update'])->name('absencies.update');
+    Route::patch('/absencies/{absencia}/aprovar', [AbsenciaController::class, 'aprovar'])->name('absencies.aprovar');
+    Route::patch('/absencies/{absencia}/rebutjar', [AbsenciaController::class, 'rebutjar'])->name('absencies.rebutjar');
 });
 
 // Carrega les rutes d'autenticació predefinides de Laravel Breeze (login, register, logout...)

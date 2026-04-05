@@ -15,9 +15,15 @@ class HorariController extends Controller
      */
     public function index()
     {
-        // Necessitem els usuaris pel desplegable i els torns per la llegenda del calendari
-        $users = User::all();
+        $user = auth()->user();
         $torns = Torn::all();
+
+        // Admin veu tots els usuaris al selector; usuari normal només ell mateix
+        if ($user->isAdmin()) {
+            $users = User::all();
+        } else {
+            $users = collect(); // No necessitem la llista per a l'usuari normal
+        }
 
         return view('horari.index', compact('users', 'torns'));
     }
@@ -29,13 +35,19 @@ class HorariController extends Controller
      */
     public function getEvents($userId)
     {
-        // Busquem els horaris de l'usuari seleccionat i carreguem la relació amb el torn per obtenir colors i hores
+        $user = auth()->user();
+
+        // Control d'accés: un usuari normal només pot veure les seves pròpies dades
+        if (! $user->isAdmin() && (int) $userId !== $user->id) {
+            return response()->json([], 403);
+        }
+
+        // Busquem els horaris de l'usuari seleccionat i carreguem la relació amb el torn
         $horaris = Horari::where('user_id', $userId)
             ->with('torn')
             ->get();
 
         // Transformem les dades al format que entén la llibreria FullCalendar
-        // Nota: Les hores d'inici i final es defineixen al torn, no a la taula d'horaris.
         $events = $horaris->map(function ($h) {
             $horaEntrada = $h->torn->hora_entrada ?? '08:00:00';
             $horaSortida = $h->torn->hora_sortida ?? '17:00:00';

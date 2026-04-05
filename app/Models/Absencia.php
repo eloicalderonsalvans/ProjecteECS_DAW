@@ -21,6 +21,7 @@ class Absencia extends Model
         'data_inici',
         'data_fi',
         'aprobat_per',
+        'estat',
     ];
 
     /**

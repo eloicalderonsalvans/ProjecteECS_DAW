@@ -24,6 +24,56 @@
                 </div>
             </div>
 
+            {{-- SECCIÓ EXCLUSIVA ADMIN: Resum d'absències pendents --}}
+            @if(auth()->user()->isAdmin())
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <a href="{{ route('absencies.index') }}" 
+                       class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-100 hover:border-amber-300 hover:shadow-md transition-all group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+                                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-3xl font-extrabold text-amber-600">{{ $absenciesPendents ?? 0 }}</p>
+                                <p class="text-sm font-bold text-gray-500 uppercase tracking-wide">Absències Pendents</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('users.index') }}" 
+                       class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-100 hover:border-blue-300 hover:shadow-md transition-all group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-500 uppercase tracking-wide">Gestió d'Usuaris</p>
+                                <p class="text-xs text-gray-400 mt-0.5">Crear, editar i administrar</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('horaris.index') }}" 
+                       class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-100 hover:border-indigo-300 hover:shadow-md transition-all group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-500 uppercase tracking-wide">Calendari d'Horaris</p>
+                                <p class="text-xs text-gray-400 mt-0.5">Assignar i consultar torns</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-100">
                     <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">La teva Informació</h4>
@@ -50,9 +100,15 @@
                     <div class="space-y-4">
                         <div class="flex items-center">
                             <span class="w-24 text-gray-500 font-medium">Rol:</span>
-                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded uppercase">
-                                {{ auth()->user()->role }}
-                            </span>
+                            @if(auth()->user()->isAdmin())
+                                <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded uppercase">
+                                    Administrador
+                                </span>
+                            @else
+                                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded uppercase">
+                                    {{ auth()->user()->role }}
+                                </span>
+                            @endif
                         </div>
                         <div class="flex items-center">
                             <span class="w-24 text-gray-500 font-medium">Departament:</span>
@@ -68,10 +124,40 @@
                 </div>
             </div>
 
-             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-100">
-                <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Notícies i Actualitzacions</h4>
-                <p class="text-gray-600 italic">Aquí es mostraran notícies, actualitzacions o enllaços útils per als usuaris de la plataforma.</p>
-             </div>
+            {{-- SECCIÓ EXCLUSIVA USUARI NORMAL: Accesos ràpids --}}
+            @if(!auth()->user()->isAdmin())
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <a href="{{ route('horaris.index') }}" 
+                       class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-100 hover:border-indigo-300 hover:shadow-md transition-all group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-700">El meu Calendari</p>
+                                <p class="text-xs text-gray-400 mt-0.5">Consulta els teus torns assignats</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('absencies.create') }}" 
+                       class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-100 hover:border-emerald-300 hover:shadow-md transition-all group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-700">Sol·licitar Absència</p>
+                                <p class="text-xs text-gray-400 mt-0.5">Demana dies lliures o baixa</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>
