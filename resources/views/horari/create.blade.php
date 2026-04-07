@@ -40,7 +40,7 @@
                     <select name="user_id" id="user_id" required class="block w-full pl-4 pr-10 py-3 text-base border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-xl shadow-sm bg-slate-50 font-semibold text-slate-700 transition-all cursor-pointer">
                         <option value="">-- Selecciona un empleat --</option>
                         @foreach($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->nom }} {{ $user->cognom }}</option>
+                            <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>{{ $user->nom }} {{ $user->cognom }}</option>
                         @endforeach
                     </select>
                 </div>

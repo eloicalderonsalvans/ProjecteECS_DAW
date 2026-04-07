@@ -48,8 +48,8 @@
                         </td>
                         <td class="p-4 text-center">
                             <!-- Badge d'estat: verd si està actiu, vermell si no -->
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->actiu ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                {{ $user->actiu ? 'Actiu' : 'Inactiu' }}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->isCurrentlyActive() ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                {{ $user->isCurrentlyActive() ? 'Actiu' : 'Inactiu' }}
                             </span>
                         </td>
                         <td class="p-4">

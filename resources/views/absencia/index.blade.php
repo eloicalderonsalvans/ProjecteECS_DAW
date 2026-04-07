@@ -101,28 +101,7 @@
                             <div class="flex justify-end gap-2">
                                 {{-- Botons d'ADMIN: Aprovar / Rebutjar / Editar / Eliminar --}}
                                 @if(auth()->user()->isAdmin())
-                                    @if($absencia->estat === 'pendent')
-                                        <form action="{{ route('absencies.aprovar', $absencia->id) }}" method="POST">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" 
-                                                    class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors shadow-sm"
-                                                    title="Aprovar absència">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                                Aprovar
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('absencies.rebutjar', $absencia->id) }}" method="POST">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" 
-                                                    class="inline-flex items-center px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-md transition-colors shadow-sm"
-                                                    title="Rebutjar absència">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                                Rebutjar
-                                            </button>
-                                        </form>
-                                    @endif
+                                  
 
                                     <a href="{{ route('absencies.edit', $absencia->id) }}" 
                                        class="inline-flex items-center px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-md transition-colors shadow-sm">

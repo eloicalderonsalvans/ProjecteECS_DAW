@@ -62,7 +62,7 @@
                             Eliminar per Rang
                         </a>
 
-                        <a href="{{ route('horaris.create') }}"
+                        <a id="btn-assignar-torns" href="{{ route('horaris.create') }}"
                             class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:-translate-y-0.5 active:scale-95">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -188,10 +188,25 @@
             if (isAdmin) {
                 // ADMIN: Selector d'usuari per canviar el calendari
                 const userSelector = document.getElementById('user-selector');
+                const btnAssignar = document.getElementById('btn-assignar-torns');
+                const btnEliminar = document.querySelector('a[href*="horaris-delete"]');
+                const baseUrlAssignar = '{{ route('horaris.create') }}';
+                const baseUrlEliminar = '{{ route('horaris.delete') }}';
+
+                // Funció per actualitzar els hrefs dels botons amb el user_id seleccionat
+                function updateButtonLinks(userId) {
+                    if (btnAssignar) {
+                        btnAssignar.href = userId ? baseUrlAssignar + '?user_id=' + userId : baseUrlAssignar;
+                    }
+                    if (btnEliminar) {
+                        btnEliminar.href = userId ? baseUrlEliminar + '?user_id=' + userId : baseUrlEliminar;
+                    }
+                }
 
                 userSelector.addEventListener('change', function () {
                     const userId = this.value;
                     calendar.removeAllEventSources();
+                    updateButtonLinks(userId);
 
                     if (!userId) {
                         calendarContainer.style.opacity = '0.5';
@@ -210,6 +225,13 @@
                         }
                     });
                 });
+
+                // Comprovar si hi ha un user_id a la URL (vingut des de redirect post-assignació)
+                const urlParams = new URLSearchParams(window.location.search);
+                const preselectedUser = urlParams.get('user_id');
+                if (preselectedUser) {
+                    userSelector.value = preselectedUser;
+                }
 
                 if (userSelector.value) {
                     userSelector.dispatchEvent(new Event('change'));

@@ -12,8 +12,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        // Obtenim tots els usuaris amb el seu departament carregat (Eager Loading)
-        $users = \App\Models\User::with('departament')->get();
+        // Obtenim tots els usuaris amb el seu departament carregat (Eager Loading) i revisem els horaris d'avui per evitar l'N+1
+        $today = \Carbon\Carbon::now()->toDateString();
+        $users = \App\Models\User::with(['departament', 'horaris' => function ($query) use ($today) {
+            $query->where('data', $today)->with('torn');
+        }])->get();
 
         // Retornem la vista enviant la llista d'usuaris
         return view('user.index', compact('users'));

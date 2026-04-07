@@ -109,8 +109,55 @@ class User extends Authenticatable
      * Relació amb Fixatges (Clock-in/out).
      * Un usuari té molts registres de fitxatge.
      */
+    /**
+     * Relació amb Fixatges (Clock-in/out).
+     * Un usuari té molts registres de fitxatge.
+     */
     public function fixatges(): HasMany
     {
         return $this->hasMany(Fixatge::class, 'user_id');
+    }
+
+    /**
+     * Comprova si l'usuari està actiu en aquest moment segons el seu torn d'avui.
+     * Retorna true si l'hora actual està dins del rang d'entrada i sortida del seu torn.
+     */
+    public function isCurrentlyActive(): bool
+    {
+        $now = \Carbon\Carbon::now();
+        $date = $now->toDateString();
+        $time = $now->toTimeString();
+
+        // Obtenim els horaris d'avui. Si ja estan carregats per Eager Loading, els filtrem a la col·lecció
+        if ($this->relationLoaded('horaris')) {
+            $horarisToday = $this->horaris->filter(function ($horari) use ($date) {
+                // Comprovem si el camp data és un string o instància Carbon
+                $hDate = $horari->data instanceof \Carbon\Carbon ? $horari->data->toDateString() : (string) $horari->data;
+                return $hDate === $date;
+            });
+        } else {
+            $horarisToday = $this->horaris()->where('data', $date)->with('torn')->get();
+        }
+
+        foreach ($horarisToday as $horari) {
+            if ($horari->torn) {
+                $entrada = $horari->torn->hora_entrada;
+                $sortida = $horari->torn->hora_sortida;
+
+                // Cas normal (ej. 08:00 - 15:00)
+                if ($entrada <= $sortida) {
+                    if ($time >= $entrada && $time <= $sortida) {
+                        return true;
+                    }
+                } else {
+                    // Cas torn nocturn, creua la mitjanit (ej. 22:00 - 06:00)
+                    if ($time >= $entrada || $time <= $sortida) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }

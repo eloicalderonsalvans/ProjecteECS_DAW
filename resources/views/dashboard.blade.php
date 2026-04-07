@@ -113,7 +113,7 @@
                         <div class="flex items-center">
                             <span class="w-24 text-gray-500 font-medium">Departament:</span>
                             <span class="text-gray-800">
-                                {{ auth()->user()->departament->nom ?? 'Sense assignar' }}
+                                {{ auth()->user()->departament->nom ?? 'Sense assignar'}}
                             </span>
                         </div>
                         <div class="flex items-center">

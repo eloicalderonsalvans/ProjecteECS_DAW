@@ -109,6 +109,7 @@
         .nav-links a.active {
             color: var(--primary);
             background-color: var(--primary-light);
+            font-weight: 800;
         }
 
         /* Botó de sortir */
@@ -167,19 +168,19 @@
             
             <!-- Enllaços de navegació condicionals segons el rol -->
             <div class="nav-links">
-                <a href="{{ route('dashboard') }}">Inici</a>
+                <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Inici</a>
 
                 @if(\Illuminate\Support\Facades\Auth::user()->isAdmin())
                     {{-- Navegació completa per a administradors --}}
-                    <a href="{{ route('users.index') }}">Usuaris</a>
-                    <a href="{{ route('departments.index') }}">Departaments</a>
-                    <a href="{{ route('horaris.index') }}">Horaris</a>
-                    <a href="{{ route('absencies.index') }}">Absències</a>
-                    <a href="{{ route('torns.index') }}">Torns</a>
+                    <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">Usuaris</a>
+                    <a href="{{ route('departments.index') }}" class="{{ request()->routeIs('departments.*') ? 'active' : '' }}">Departaments</a>
+                    <a href="{{ route('horaris.index') }}" class="{{ request()->routeIs('horaris.*') ? 'active' : '' }}">Horaris</a>
+                    <a href="{{ route('absencies.index') }}" class="{{ request()->routeIs('absencies.*') ? 'active' : '' }}">Absències</a>
+                    <a href="{{ route('torns.index') }}" class="{{ request()->routeIs('torns.*') ? 'active' : '' }}">Torns</a>
                 @else
                     {{-- Navegació simplificada per a usuaris normals --}}
-                    <a href="{{ route('horaris.index') }}">El meu Calendari</a>
-                    <a href="{{ route('absencies.index') }}">Les meves Absències</a>
+                    <a href="{{ route('horaris.index') }}" class="{{ request()->routeIs('horaris.*') ? 'active' : '' }}">El meu Calendari</a>
+                    <a href="{{ route('absencies.index') }}" class="{{ request()->routeIs('absencies.*') ? 'active' : '' }}">Les meves Absències</a>
                 @endif
             </div>
         </div>

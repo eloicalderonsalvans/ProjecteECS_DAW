@@ -62,7 +62,31 @@ class HorariController extends Controller
             ];
         });
 
-        return response()->json($events);
+        // Carreguem també les absències aprovades de l'usuari
+        $absencies = \App\Models\Absencia::where('user_id', $userId)
+            ->where('estat', 'aprovada')
+            ->get();
+
+        $absenciaEvents = $absencies->map(function ($a) {
+            $inici = \Carbon\Carbon::parse($a->data_inici);
+            $fi = \Carbon\Carbon::parse($a->data_fi);
+            
+            return [
+                'id' => 'abs_' . $a->id,
+                'title' => 'Absència: ' . $a->motiu,
+                'start' => $inici->format('Y-m-d'),
+                // FullCalendar d'esdeveniments d'un dia sencer necessita que end sigui exclusiu
+                'end' => $fi->copy()->addDay()->format('Y-m-d'),
+                'backgroundColor' => '#f87171', // Vermell/Coral
+                'borderColor' => '#ef4444',
+                'allDay' => true,
+            ];
+        });
+
+        // Combinem els torns i les absències
+        $allEvents = $events->concat($absenciaEvents);
+
+        return response()->json($allEvents);
     }
 
     /**
@@ -116,7 +140,7 @@ class HorariController extends Controller
             $inici->addDay();
         }
 
-        return redirect()->route('horaris.index')->with('success', 'Horaris assignats correctament!');
+        return redirect()->route('horaris.index', ['user_id' => $request->user_id])->with('success', 'Horaris assignats correctament!');
     }
 
     /**

@@ -69,6 +69,19 @@ class AbsenciaController extends Controller
             'data_fi' => 'required|date|after_or_equal:data_inici',
         ]);
 
+        $targetUserId = $user->isAdmin() && $request->has('user_id') ? $request->user_id : $user->id;
+
+        // Comprovem que l'usuari tingui com a mínim un torn assignat entre aquestes dates
+        $hasShifts = \App\Models\Horari::where('user_id', $targetUserId)
+            ->whereBetween('data', [$request->data_inici, $request->data_fi])
+            ->exists();
+
+        if (! $hasShifts) {
+            return redirect()->back()
+                ->withErrors(['data_inici' => "No es pot demanar una absència si no es té cap torn assignat en aquestes dates."])
+                ->withInput();
+        }
+
         if ($user->isAdmin()) {
             // Admin pot assignar a qualsevol usuari
             $request->validate([
