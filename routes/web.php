@@ -19,6 +19,11 @@ Route::get('/dashboard', function () {
     $user = auth()->user();
     $data = [];
 
+    // Dies de vacances restants per a l'usuari actual
+    $data['diesVacancesRestants'] = $user->diesVacancesRestants();
+    $data['diesVacancesConsumits'] = $user->diesVacancesConsumits();
+    $data['diesVacancesTotal'] = \App\Models\User::DIES_VACANCES_ANUALS;
+
     // Si l'usuari és admin, carreguem el comptador d'absències pendents
     if ($user->isAdmin()) {
         $data['absenciesPendents'] = \App\Models\Absencia::where('estat', 'pendent')->count();
@@ -40,6 +45,16 @@ Route::middleware('auth')->group(function () {
     // --- CALENDARI (tots els usuaris poden veure el calendari) ---
     Route::get('/horaris', [HorariController::class, 'index'])->name('horaris.index');
     Route::get('/api/horaris/user/{userId}', [HorariController::class, 'getEvents']);
+
+    // --- API: obtenir dies de vacances d'un usuari (AJAX) ---
+    Route::get('/api/vacances/user/{userId}', function ($userId) {
+        $targetUser = \App\Models\User::findOrFail($userId);
+        return response()->json([
+            'consumits' => $targetUser->diesVacancesConsumits(),
+            'restants' => $targetUser->diesVacancesRestants(),
+            'total' => \App\Models\User::DIES_VACANCES_ANUALS,
+        ]);
+    });
 
     // --- ABSÈNCIES (funcionalitats d'usuari normal) ---
     Route::get('/absencies', [AbsenciaController::class, 'index'])->name('absencies.index');

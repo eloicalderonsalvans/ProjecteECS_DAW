@@ -32,8 +32,14 @@
 
                 <div class="md:col-span-2">
                     <label for="motiu" class="block text-sm font-bold text-gray-700 mb-1">Motiu de l'absència</label>
-                    <input type="text" name="motiu" id="motiu" value="{{ old('motiu', $absencia->motiu) }}" required 
-                           class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="motiu" id="motiu" required
+                            class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
+                        <option value="Vacances" {{ old('motiu', $absencia->motiu) == 'Vacances' ? 'selected' : '' }}>🏖️ Vacances</option>
+                        <option value="Baixa mèdica" {{ old('motiu', $absencia->motiu) == 'Baixa mèdica' ? 'selected' : '' }}>🏥 Baixa mèdica</option>
+                        <option value="Assumptes propis" {{ old('motiu', $absencia->motiu) == 'Assumptes propis' ? 'selected' : '' }}>📋 Assumptes propis</option>
+                        <option value="Formació" {{ old('motiu', $absencia->motiu) == 'Formació' ? 'selected' : '' }}>📚 Formació</option>
+                        <option value="Altres" {{ old('motiu', $absencia->motiu) == 'Altres' ? 'selected' : '' }}>📝 Altres</option>
+                    </select>
                 </div>
 
                 <div>
@@ -68,9 +74,9 @@
                     <label for="estat" class="block text-sm font-bold text-gray-700 mb-1">Estat</label>
                     <select name="estat" id="estat" 
                             class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
-                        <option value="pendent" {{ old('estat', $absencia->estat) == 'pendent' ? 'selected' : '' }}>⏳ Pendent</option>
-                        <option value="aprovada" {{ old('estat', $absencia->estat) == 'aprovada' ? 'selected' : '' }}>✅ Aprovada</option>
-                        <option value="rebutjada" {{ old('estat', $absencia->estat) == 'rebutjada' ? 'selected' : '' }}>❌ Rebutjada</option>
+                        <option value="pendent" {{ old('estat', $absencia->estat) == 'pendent' ? 'selected' : '' }}>Pendent</option>
+                        <option value="aprovada" {{ old('estat', $absencia->estat) == 'aprovada' ? 'selected' : '' }}>Aprovada</option>
+                        <option value="rebutjada" {{ old('estat', $absencia->estat) == 'rebutjada' ? 'selected' : '' }}>Rebutjada</option>
                     </select>
                 </div>
 

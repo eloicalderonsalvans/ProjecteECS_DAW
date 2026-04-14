@@ -15,6 +15,11 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * Nombre total de dies de vacances disponibles per any natural.
+     */
+    const DIES_VACANCES_ANUALS = 30;
+
+    /**
      * Sobreescribim el mètode per indicar quina columna conté la contrasenya.
      * Per defecte Laravel busca 'password'.
      */
@@ -70,6 +75,58 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Calcula els dies de vacances consumits durant un any natural.
+     * Compta els dies naturals de totes les absències amb motiu 'Vacances'
+     * que estiguin aprovades o pendents (les pendents es reserven).
+     */
+    public function diesVacancesConsumits(int $any = null): int
+    {
+        $any = $any ?? now()->year;
+
+        $absencies = $this->absencies()
+            ->where('motiu', 'Vacances')
+            ->whereIn('estat', ['aprovada', 'pendent'])
+            ->where(function ($query) use ($any) {
+                $query->whereYear('data_inici', $any)
+                      ->orWhereYear('data_fi', $any);
+            })
+            ->get();
+
+        $totalDies = 0;
+
+        foreach ($absencies as $absencia) {
+            // Limitem l'interval dins de l'any natural
+            $inici = \Carbon\Carbon::parse($absencia->data_inici);
+            $fi = \Carbon\Carbon::parse($absencia->data_fi);
+
+            $iniciAny = \Carbon\Carbon::create($any, 1, 1);
+            $fiAny = \Carbon\Carbon::create($any, 12, 31);
+
+            // Si l'absència comença abans de l'any, limitem al 1 de gener
+            if ($inici->lt($iniciAny)) {
+                $inici = $iniciAny;
+            }
+            // Si l'absència acaba després de l'any, limitem al 31 de desembre
+            if ($fi->gt($fiAny)) {
+                $fi = $fiAny;
+            }
+
+            // +1 perquè ambdós dies són inclusius
+            $totalDies += $inici->diffInDays($fi) + 1;
+        }
+
+        return $totalDies;
+    }
+
+    /**
+     * Retorna els dies de vacances restants per a un any natural.
+     */
+    public function diesVacancesRestants(int $any = null): int
+    {
+        return max(0, self::DIES_VACANCES_ANUALS - $this->diesVacancesConsumits($any));
     }
 
     /*

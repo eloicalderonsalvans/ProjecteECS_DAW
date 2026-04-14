@@ -190,8 +190,8 @@
                 const userSelector = document.getElementById('user-selector');
                 const btnAssignar = document.getElementById('btn-assignar-torns');
                 const btnEliminar = document.querySelector('a[href*="horaris-delete"]');
-                const baseUrlAssignar = '{{ route('horaris.create') }}';
-                const baseUrlEliminar = '{{ route('horaris.delete') }}';
+                const baseUrlAssignar = "{{ route('horaris.create') }}";
+                const baseUrlEliminar = "{{ route('horaris.delete') }}";
 
                 // Funció per actualitzar els hrefs dels botons amb el user_id seleccionat
                 function updateButtonLinks(userId) {

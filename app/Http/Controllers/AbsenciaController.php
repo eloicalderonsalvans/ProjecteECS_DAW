@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Absencia;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AbsenciaController extends Controller
@@ -17,6 +18,11 @@ class AbsenciaController extends Controller
     {
         $user = auth()->user();
 
+        // Dies de vacances per a l'usuari actual
+        $diesVacancesRestants = $user->diesVacancesRestants();
+        $diesVacancesConsumits = $user->diesVacancesConsumits();
+        $diesVacancesTotal = User::DIES_VACANCES_ANUALS;
+
         if ($user->isAdmin()) {
             // Admin veu totes les absències amb l'usuari associat
             $absencies = Absencia::with('user')->orderBy('data_inici', 'desc')->get();
@@ -27,7 +33,7 @@ class AbsenciaController extends Controller
                 ->get();
         }
 
-        return view('absencia.index', compact('absencies'));
+        return view('absencia.index', compact('absencies', 'diesVacancesRestants', 'diesVacancesConsumits', 'diesVacancesTotal'));
     }
 
     /**
@@ -41,6 +47,10 @@ class AbsenciaController extends Controller
         $users = null;
         $aprovadors = null;
 
+        // Dies de vacances restants per a l'usuari actual
+        $diesRestants = $user->diesVacancesRestants();
+        $diesConsumits = $user->diesVacancesConsumits();
+
         if ($user->isAdmin()) {
             $users = User::where('actiu', true)->get();
             $aprovadors = User::where('actiu', true)
@@ -52,7 +62,7 @@ class AbsenciaController extends Controller
                 })->get();
         }
 
-        return view('absencia.create', compact('users', 'aprovadors'));
+        return view('absencia.create', compact('users', 'aprovadors', 'diesRestants', 'diesConsumits'));
     }
 
     /**
@@ -64,12 +74,13 @@ class AbsenciaController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'motiu' => 'required|string|max:255',
+            'motiu' => 'required|string|in:Vacances,Baixa mèdica,Assumptes propis,Formació,Altres',
             'data_inici' => 'required|date',
             'data_fi' => 'required|date|after_or_equal:data_inici',
         ]);
 
         $targetUserId = $user->isAdmin() && $request->has('user_id') ? $request->user_id : $user->id;
+        $targetUser = User::findOrFail($targetUserId);
 
         // Comprovem que l'usuari tingui com a mínim un torn assignat entre aquestes dates
         $hasShifts = \App\Models\Horari::where('user_id', $targetUserId)
@@ -80,6 +91,22 @@ class AbsenciaController extends Controller
             return redirect()->back()
                 ->withErrors(['data_inici' => "No es pot demanar una absència si no es té cap torn assignat en aquestes dates."])
                 ->withInput();
+        }
+
+        // Validació de dies de vacances disponibles
+        if ($request->motiu === 'Vacances') {
+            $dataInici = Carbon::parse($request->data_inici);
+            $dataFi = Carbon::parse($request->data_fi);
+            $diesSollicitats = $dataInici->diffInDays($dataFi) + 1;
+
+            $anyInici = $dataInici->year;
+            $diesRestants = $targetUser->diesVacancesRestants($anyInici);
+
+            if ($diesSollicitats > $diesRestants) {
+                return redirect()->back()
+                    ->withErrors(['motiu' => "No tens prou dies de vacances. Dies sol·licitats: {$diesSollicitats}. Dies disponibles: {$diesRestants}."])
+                    ->withInput();
+            }
         }
 
         if ($user->isAdmin()) {
@@ -158,6 +185,25 @@ class AbsenciaController extends Controller
     {
         $absencia = Absencia::findOrFail($id);
         $admin = auth()->user();
+
+        // Si és de vacances, validem que l'usuari encara tingui dies disponibles
+        if ($absencia->motiu === 'Vacances') {
+            $empleat = User::findOrFail($absencia->user_id);
+            $dataInici = Carbon::parse($absencia->data_inici);
+            $dataFi = Carbon::parse($absencia->data_fi);
+            $diesAbsencia = $dataInici->diffInDays($dataFi) + 1;
+
+            // Calculem restants sense comptar aquesta absència (ja és pendent, ja es compta)
+            // Simplement verifiquem que els consumits no superin el màxim
+            $diesRestants = $empleat->diesVacancesRestants($dataInici->year);
+
+            // Si l'absència ja es comptava com a pendent, els dies restants ja la tenen en compte.
+            // Per tant, si diesRestants >= 0, vol dir que hi cap.
+            if ($diesRestants < 0) {
+                return redirect()->route('absencies.index')
+                    ->with('error', "No es pot aprovar: l'empleat no té prou dies de vacances disponibles.");
+            }
+        }
 
         $absencia->update([
             'estat' => 'aprovada',

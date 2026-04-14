@@ -112,6 +112,7 @@ class HorariController extends Controller
             'torn_id' => 'required|exists:torns,id',
             'data_inici' => 'required|date',
             'data_fi' => 'required|date|after_or_equal:data_inici',
+            'assign_mode' => 'required|in:all,weekdays_only,weekends_only',
         ]);
 
         // 2. Busquem el torn per obtenir les seves hores i propietats
@@ -119,23 +120,33 @@ class HorariController extends Controller
 
         $inici = \Carbon\Carbon::parse($request->data_inici);
         $fi = \Carbon\Carbon::parse($request->data_fi);
-        $ignorarCapsSetmana = $request->boolean('ignorar_caps_setmana');
+        $assignMode = $request->input('assign_mode', 'all');
 
         // 3. Creació massiva dia a dia en el rang especificat
         while ($inici <= $fi) {
-            // Si l'opció "ignorar caps de setmana" està activa, saltem dissabtes (6) i diumenges (0)
-            if (! $ignorarCapsSetmana || ! in_array($inici->dayOfWeek, [0, 6])) {
-                // Utilitzem updateOrCreate per evitar duplicats per al mateix dia i usuari
-                Horari::updateOrCreate(
-                    [
-                        'user_id' => $request->user_id,
-                        'data' => $inici->format('Y-m-d'),
-                    ],
-                    [
-                        'torn_id' => $request->torn_id,
-                    ]
-                );
+            $isWeekend = in_array($inici->dayOfWeek, [0, 6]);
+
+            if ($assignMode === 'weekdays_only' && $isWeekend) {
+                $inici->addDay();
+                continue;
             }
+
+            if ($assignMode === 'weekends_only' && ! $isWeekend) {
+                $inici->addDay();
+                continue;
+            }
+
+            // Utilitzem updateOrCreate per evitar duplicats per al mateix dia i usuari
+            Horari::updateOrCreate(
+                [
+                    'user_id' => $request->user_id,
+                    'data' => $inici->format('Y-m-d'),
+                ],
+                [
+                    'torn_id' => $request->torn_id,
+                ]
+            );
+
             // Avancem al següent dia
             $inici->addDay();
         }

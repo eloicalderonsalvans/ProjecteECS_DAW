@@ -124,6 +124,52 @@
                 </div>
             </div>
 
+            {{-- SECCIÓ: Dies de Vacances (per a tots els usuaris) --}}
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-100">
+                <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">🏖️ Dies de Vacances ({{ now()->year }})</h4>
+                
+                <div class="flex items-center gap-6">
+                    {{-- Gràfic circular visual --}}
+                    <div class="relative w-24 h-24 flex-shrink-0">
+                        @php
+                            $pct = $diesVacancesTotal > 0 ? ($diesVacancesConsumits / $diesVacancesTotal) * 100 : 0;
+                            $circumference = 2 * 3.14159 * 40;
+                            $dashOffset = $circumference - ($circumference * min($pct, 100) / 100);
+                            $color = $pct < 60 ? '#10b981' : ($pct < 90 ? '#f59e0b' : '#ef4444');
+                        @endphp
+                        <svg class="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="{{ $color }}" stroke-width="8"
+                                    stroke-dasharray="{{ $circumference }}" stroke-dashoffset="{{ $dashOffset }}"
+                                    stroke-linecap="round" class="transition-all duration-700"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-lg font-extrabold" style="color: {{ $color }}">{{ $diesVacancesRestants }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Detalls --}}
+                    <div class="flex-1 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">Dies restants</span>
+                            <span class="text-xl font-extrabold" style="color: {{ $diesVacancesRestants > 10 ? '#065f46' : ($diesVacancesRestants > 0 ? '#92400e' : '#991b1b') }};">{{ $diesVacancesRestants }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">Dies consumits</span>
+                            <span class="text-sm font-bold text-gray-700">{{ $diesVacancesConsumits }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="h-2.5 rounded-full transition-all duration-500"
+                                 style="width: {{ min($pct, 100) }}%; background-color: {{ $color }};"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-400">
+                            <span>0</span>
+                            <span>{{ $diesVacancesTotal }} dies totals</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- SECCIÓ EXCLUSIVA USUARI NORMAL: Accesos ràpids --}}
             @if(!auth()->user()->isAdmin())
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
