@@ -120,7 +120,7 @@
                         </div>
                         <div class="flex justify-between items-center py-1 border-b border-gray-50">
                             <span class="text-gray-500 font-medium">Departament:</span>
-                            <span class="text-gray-800 font-semibold text-right">
+                            <span class="text-gray-800 text-right">
                                 {{ auth()->user()->departament->nom ?? 'Sense assignar'}}
                             </span>
                         </div>
