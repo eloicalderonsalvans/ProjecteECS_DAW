@@ -6,6 +6,11 @@
     <title>Gestor de personal - Fitxaring</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    
     <!-- Permet injectar CSS o scripts específics de cada vista -->
     @yield('styles')
     @yield('scripts_head')
