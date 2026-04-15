@@ -62,9 +62,10 @@ class HorariController extends Controller
             ];
         });
 
-        // Carreguem també les absències aprovades de l'usuari
+        // Carreguem només les absències aprovades vigents (data_fi >= avui)
         $absencies = \App\Models\Absencia::where('user_id', $userId)
             ->where('estat', 'aprovada')
+            ->where('data_fi', '>=', now()->toDateString())
             ->get();
 
         $absenciaEvents = $absencies->map(function ($a) {

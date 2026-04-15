@@ -24,11 +24,14 @@ class AbsenciaController extends Controller
         $diesVacancesTotal = User::DIES_VACANCES_ANUALS;
 
         if ($user->isAdmin()) {
-            // Admin veu totes les absències amb l'usuari associat
-            $absencies = Absencia::with('user')->orderBy('data_inici', 'desc')->get();
+            // Admin veu totes les absències vigents (data_fi >= avui)
+            $absencies = Absencia::with('user')
+                ->where('data_fi', '>=', now()->toDateString())
+                ->orderBy('data_inici', 'desc')->get();
         } else {
-            // Usuari normal només veu les seves pròpies
+            // Usuari normal només veu les seves pròpies vigents
             $absencies = Absencia::where('user_id', $user->id)
+                ->where('data_fi', '>=', now()->toDateString())
                 ->orderBy('data_inici', 'desc')
                 ->get();
         }

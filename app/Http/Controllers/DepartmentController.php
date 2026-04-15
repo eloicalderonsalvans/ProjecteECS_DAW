@@ -45,7 +45,7 @@ class DepartmentController extends Controller
         $dept->save();
 
         // 3. Redirecció amb missatge de confirmació
-        return redirect()->route('department.index')->with('success', 'Departament creat correctament!');
+        return redirect()->route('departments.index')->with('success', 'Departament creat correctament!');
     }
 
     /**
