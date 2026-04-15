@@ -87,17 +87,17 @@
                     <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">La teva Informació</h4>
 
                     <div class="space-y-3">
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <div class="flex justify-between items-center py-1 border-b border-gray-50">
                             <span class="text-gray-500 font-medium">Nom:</span>
                             <span class="text-gray-800">{{ auth()->user()->nom }} {{ auth()->user()->cognom }}</span>
                         </div>
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <div class="flex justify-between items-center py-1 border-b border-gray-50">
                             <span class="text-gray-500 font-medium">Email:</span>
                             <span class="text-gray-800">{{ auth()->user()->email }}</span>
                         </div>
-                        <div class="flex justify-between items-center py-2">
+                        <div class="flex justify-between items-center py-1">
                             <span class="text-gray-500 font-medium">DNI:</span>
-                            <span class="text-gray-800 font-mono">{{ auth()->user()->DNI }}</span>
+                            <span class="text-gray-800">{{ auth()->user()->DNI }}</span>
                         </div>
                     </div>
                 </div>
@@ -106,7 +106,7 @@
                     <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Dades Professionals</h4>
 
                     <div class="space-y-3">
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <div class="flex justify-between items-center py-1 border-b border-gray-50">
                             <span class="text-gray-500 font-medium">Rol:</span>
                             @if(auth()->user()->isAdmin())
                                 <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded uppercase">
@@ -118,13 +118,13 @@
                                 </span>
                             @endif
                         </div>
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <div class="flex justify-between items-center py-1 border-b border-gray-50">
                             <span class="text-gray-500 font-medium">Departament:</span>
-                            <span class="text-gray-800">
+                            <span class="text-gray-800 font-semibold text-right">
                                 {{ auth()->user()->departament->nom ?? 'Sense assignar'}}
                             </span>
                         </div>
-                        <div class="flex justify-between items-center py-2">
+                        <div class="flex justify-between items-center py-1">
                             <span class="text-gray-500 font-medium">Alta:</span>
                             <span class="text-gray-800">{{ auth()->user()->data_alta->format('d/m/Y') }}</span>
                         </div>
