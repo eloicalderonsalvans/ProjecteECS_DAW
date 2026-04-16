@@ -59,10 +59,7 @@
     <nav
         class="absolute top-0 w-full p-6 lg:p-10 z-50 flex justify-between items-center max-w-7xl mx-auto left-0 right-0">
         <div class="flex items-center gap-3">
-            <div
-                class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">
-                F
-            </div>
+            <x-application-logo class="w-10 h-10" />
             <span class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Fitxaring</span>
         </div>
 

@@ -59,6 +59,7 @@
             height: 180px;
             object-fit: contain;
             image-rendering: pixelated;
+            transition: filter 0.2s ease;
             filter: drop-shadow(0 14px 20px rgba(245, 158, 11, 0.2));
         }
 
@@ -79,7 +80,8 @@
             transform: translateY(-2px) scale(1.03);
         }
 
-        .fitxatge-ring-button:hover .fitxatge-gif {
+        .fitxatge-ring-button:hover .fitxatge-gif,
+        .fitxatge-ring-button:active .fitxatge-gif {
             filter: hue-rotate(200deg) saturate(2.2) brightness(1.05) drop-shadow(0 14px 24px rgba(37, 99, 235, 0.35));
         }
 
@@ -144,8 +146,12 @@
             font-size: 0.85rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
-            background: {{ $ultimFixatge?->check ? '#dcfce7' : '#e2e8f0' }};
-            color: {{ $ultimFixatge?->check ? '#166534' : '#475569' }};
+            background:
+                {{ $ultimFixatge?->check ? '#dcfce7' : '#e2e8f0' }}
+            ;
+            color:
+                {{ $ultimFixatge?->check ? '#166534' : '#475569' }}
+            ;
         }
 
         .fitxatge-meta {
@@ -303,6 +309,7 @@
         }
 
         @media (max-width: 640px) {
+
             .fitxatge-card,
             .historial-card {
                 padding: 1.25rem;
@@ -343,7 +350,7 @@
                 <p class="fitxatge-kicker">Control de jornada</p>
                 <h1 class="fitxatge-title">Fitxa la teva {{ $esEntrada ? 'entrada' : 'sortida' }}</h1>
                 <p class="fitxatge-subtitle">
-                    Prem el botó per registrar el teu moviment actual. Cada acció queda guardada automàticament a l'historial de fitxatges.
+                    Prem l'anell per fitxar.
                 </p>
 
                 <div class="estat-pill">{{ $estatActual }}</div>
@@ -353,19 +360,10 @@
                     <input type="hidden" name="ubicacio_x" id="ubicacio_x">
                     <input type="hidden" name="ubicacio_y" id="ubicacio_y">
                     <input type="hidden" name="data_local" id="data_local">
-                    <button
-                        type="submit"
-                        id="fitxatge-submit"
-                        class="fitxatge-ring-button"
+                    <button type="submit" id="fitxatge-submit" class="fitxatge-ring-button"
                         aria-label="{{ $esEntrada ? 'Fitxar entrada' : 'Fitxar sortida' }}"
-                        title="{{ $esEntrada ? 'Fitxar entrada' : 'Fitxar sortida' }}"
-                    >
-                        <img
-                            src="{{ asset('images/fixatge-ring.png') }}"
-                            alt=""
-                            aria-hidden="true"
-                            class="fitxatge-gif"
-                        >
+                        title="{{ $esEntrada ? 'Fitxar entrada' : 'Fitxar sortida' }}">
+                        <img src="{{ asset('images/fixatge-ring.png') }}" alt="" aria-hidden="true" class="fitxatge-gif">
                     </button>
                     <div id="fitxatge-status" class="fitxatge-status">
                         Caldrà autoritzar la ubicació per registrar el fitxatge.
@@ -444,7 +442,8 @@
                                         <td>{{ $registre->user?->nom }} {{ $registre->user?->cognom }}</td>
                                     @endif
                                     <td>
-                                        <span class="historial-badge {{ $registre->check ? 'historial-badge--entrada' : 'historial-badge--sortida' }}">
+                                        <span
+                                            class="historial-badge {{ $registre->check ? 'historial-badge--entrada' : 'historial-badge--sortida' }}">
                                             {{ $registre->check ? 'Entrada' : 'Sortida' }}
                                         </span>
                                     </td>
@@ -539,7 +538,7 @@
                     .then((position) => {
                         fillLocation(position);
                         sendingWithLocation = true;
-                        
+
                         const now = new Date();
                         const tzOffset = now.getTimezoneOffset() * 60000;
                         const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 19).replace('T', ' ');

@@ -56,9 +56,7 @@
 
         <div class="mb-10 relative z-10 w-full flex justify-center">
             <a href="/" class="flex flex-col items-center gap-4 transition-transform hover:scale-105 active:scale-95">
-                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-4xl shadow-xl shadow-blue-500/30">
-                    F
-                </div>
+                <x-application-logo class="w-16 h-16" />
                 <span class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white select-none">Fitxaring</span>
             </a>
         </div>
