@@ -21,7 +21,7 @@ class AbsenciaController extends Controller
         // Dies de vacances per a l'usuari actual
         $diesVacancesRestants = $user->diesVacancesRestants();
         $diesVacancesConsumits = $user->diesVacancesConsumits();
-        $diesVacancesTotal = User::DIES_VACANCES_ANUALS;
+        $diesVacancesTotal = $user->totalDiesVacances();
 
         if ($user->isAdmin()) {
             // Admin veu totes les absències vigents (data_fi >= avui)
@@ -65,7 +65,8 @@ class AbsenciaController extends Controller
                 })->get();
         }
 
-        return view('absencia.create', compact('users', 'aprovadors', 'diesRestants', 'diesConsumits'));
+        $diesTotal = $user->totalDiesVacances();
+        return view('absencia.create', compact('users', 'aprovadors', 'diesRestants', 'diesConsumits', 'diesTotal'));
     }
 
     /**

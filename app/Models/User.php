@@ -91,7 +91,7 @@ class User extends Authenticatable
             ->whereIn('estat', ['aprovada', 'pendent'])
             ->where(function ($query) use ($any) {
                 $query->whereYear('data_inici', $any)
-                      ->orWhereYear('data_fi', $any);
+                    ->orWhereYear('data_fi', $any);
             })
             ->get();
 
@@ -115,10 +115,38 @@ class User extends Authenticatable
             }
 
             // +1 perquè ambdós dies són inclusius
-            $totalDies += $inici->diffInDays($fi) + 1;
+            $totalDies += (int) ($inici->diffInDays($fi) + 1);
         }
 
         return $totalDies;
+    }
+
+    /**
+     * Calcula el total de dies de vacances que corresponen a l'usuari segons la seva data d'alta.
+     * Es calcula de forma proporcional als dies de l'any.
+     */
+    public function totalDiesVacances(int $any = null): int
+    {
+        $any = $any ?? now()->year;
+        $dataAlta = $this->data_alta;
+
+        if (!$dataAlta || $dataAlta->year < $any) {
+            return self::DIES_VACANCES_ANUALS;
+        }
+
+        if ($dataAlta->year == $any) {
+            $fiAny = \Carbon\Carbon::create($any, 12, 31);
+
+            // Dies des de la data d'alta fins a final d'any
+            $diesEnActiu = $dataAlta->diffInDays($fiAny) + 1;
+
+            // Total de dies de l'any
+            $diesAny = $fiAny->isLeapYear() ? 366 : 365;
+
+            return (int) round(($diesEnActiu / $diesAny) * self::DIES_VACANCES_ANUALS);
+        }
+
+        return 0;
     }
 
     /**
@@ -126,7 +154,7 @@ class User extends Authenticatable
      */
     public function diesVacancesRestants(int $any = null): int
     {
-        return max(0, self::DIES_VACANCES_ANUALS - $this->diesVacancesConsumits($any));
+        return max(0, $this->totalDiesVacances($any) - $this->diesVacancesConsumits($any));
     }
 
     /*

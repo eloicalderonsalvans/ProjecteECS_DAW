@@ -10,7 +10,7 @@ class Fixatge extends Model
 {
     use HasFactory;
 
-    protected $table = 'fixatges';
+    protected $table = 'fitxatges';
 
     /**
      * Atributs assignables per al registre de jornada laboral.

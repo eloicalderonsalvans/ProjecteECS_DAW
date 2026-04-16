@@ -22,7 +22,7 @@ Route::get('/dashboard', function () {
     // Dies de vacances restants per a l'usuari actual
     $data['diesVacancesRestants'] = $user->diesVacancesRestants();
     $data['diesVacancesConsumits'] = $user->diesVacancesConsumits();
-    $data['diesVacancesTotal'] = \App\Models\User::DIES_VACANCES_ANUALS;
+    $data['diesVacancesTotal'] = $user->totalDiesVacances();
 
     // Si l'usuari és admin, carreguem el comptador d'absències pendents
     if ($user->isAdmin()) {
@@ -52,9 +52,13 @@ Route::middleware('auth')->group(function () {
         return response()->json([
             'consumits' => $targetUser->diesVacancesConsumits(),
             'restants' => $targetUser->diesVacancesRestants(),
-            'total' => \App\Models\User::DIES_VACANCES_ANUALS,
+            'total' => $targetUser->totalDiesVacances(),
         ]);
     });
+
+    // --- FITXATGES ---
+    Route::get('/fitxar', [FixatgeController::class, 'index'])->name('fitxar.index');
+    Route::post('/fitxar', [FixatgeController::class, 'store'])->name('fitxar.store');
 
     // --- ABSÈNCIES (funcionalitats d'usuari normal) ---
     Route::get('/absencies', [AbsenciaController::class, 'index'])->name('absencies.index');

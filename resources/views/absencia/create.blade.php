@@ -22,9 +22,7 @@
                 <div class="flex-1">
                     <p class="text-sm font-bold text-emerald-800">Dies de Vacances ({{ now()->year }})</p>
                     <div class="flex items-center gap-4 mt-1">
-                        <span class="text-xs text-emerald-600">
-                            Consumits: <strong id="dies-consumits">{{ $diesConsumits }}</strong> / {{ \App\Models\User::DIES_VACANCES_ANUALS }}
-                        </span>
+                            Consumits: <strong id="dies-consumits">{{ $diesConsumits }}</strong> / <span id="dies-totals">{{ $diesTotal }}</span>
                         <span class="text-xs font-bold px-2 py-0.5 rounded-full" id="dies-restants-badge"
                               style="background-color: {{ $diesRestants > 10 ? '#d1fae5' : ($diesRestants > 0 ? '#fef3c7' : '#fee2e2') }}; color: {{ $diesRestants > 10 ? '#065f46' : ($diesRestants > 0 ? '#92400e' : '#991b1b') }};">
                             {{ $diesRestants }} dies restants
@@ -32,7 +30,7 @@
                     </div>
                     {{-- Barra de progrés --}}
                     <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                        @php $percentatge = ($diesConsumits / \App\Models\User::DIES_VACANCES_ANUALS) * 100; @endphp
+                        @php $percentatge = $diesTotal > 0 ? ($diesConsumits / $diesTotal) * 100 : 0; @endphp
                         <div class="h-2 rounded-full transition-all duration-500"
                              id="vacances-progress-bar"
                              style="width: {{ min($percentatge, 100) }}%; background-color: {{ $percentatge < 60 ? '#10b981' : ($percentatge < 90 ? '#f59e0b' : '#ef4444') }};"></div>
@@ -250,6 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     const badge = document.getElementById('dies-restants-badge');
                     badge.textContent = data.restants + ' dies restants';
+                    document.getElementById('dies-totals').textContent = data.total;
                     badge.style.backgroundColor = data.restants > 10 ? '#d1fae5' : (data.restants > 0 ? '#fef3c7' : '#fee2e2');
                     badge.style.color = data.restants > 10 ? '#065f46' : (data.restants > 0 ? '#92400e' : '#991b1b');
 

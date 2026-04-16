@@ -10,7 +10,7 @@ class H_Fixatge extends Model
 {
     use HasFactory;
 
-    protected $table = 'h_fitxatges';
+    protected $table = 'h__fitxatges';
 
     /**
      * Atributs assignables segons la captura de phpMyAdmin.

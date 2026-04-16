@@ -155,12 +155,83 @@
             font-weight: 600;
             font-size: 0.9rem;
         }
+
+        /* Responsive Navigation Styles */
+        .nav-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-grow: 1;
+            margin-left: 2rem;
+            gap: 1rem;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.75rem 1.25rem;
+            }
+            .nav-header {
+                width: 100%;
+            }
+            .nav-menu {
+                display: none;
+                flex-direction: column;
+                align-items: stretch;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                padding: 1rem 1.25rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                margin: 0;
+                border-top: 1px solid rgba(226, 232, 240, 0.8);
+            }
+            .nav-menu.active {
+                display: flex;
+            }
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .nav-links a {
+                display: block;
+                text-align: center;
+                padding: 0.75rem;
+            }
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: none;
+                border: none;
+                color: var(--text-main);
+                cursor: pointer;
+                padding: 0.25rem;
+            }
+            .btn-logout {
+                justify-content: center;
+                margin-top: 0.5rem;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Barra de navegació principal -->
     <nav class="navbar">
-        <div class="nav-group">
+        <div class="nav-header">
             <!-- Nom de l'usuari autenticat + badge de rol -->
             <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <span class="user-badge">{{ \Illuminate\Support\Facades\Auth::user()->nom }}</span>
@@ -170,7 +241,18 @@
                     <span class="role-badge role-badge--user">Empleat</span>
                 @endif
             </div>
-            
+
+            <!-- Botó per al menú en versió mòbil -->
+            <button class="mobile-menu-btn" aria-label="Obrir menú" onclick="document.getElementById('nav-menu').classList.toggle('active')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="nav-menu" id="nav-menu">
             <!-- Enllaços de navegació condicionals segons el rol -->
             <div class="nav-links">
                 <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Inici</a>
@@ -180,21 +262,26 @@
                     <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">Usuaris</a>
                     <a href="{{ route('departments.index') }}" class="{{ request()->routeIs('departments.*') ? 'active' : '' }}">Departaments</a>
                     <a href="{{ route('horaris.index') }}" class="{{ request()->routeIs('horaris.*') ? 'active' : '' }}">Horaris</a>
+                    <a href="{{ route('fitxar.index') }}" class="{{ request()->routeIs('fitxar.*') ? 'active' : '' }}">Fitxar</a>
                     <a href="{{ route('absencies.index') }}" class="{{ request()->routeIs('absencies.*') ? 'active' : '' }}">Absències</a>
                     <a href="{{ route('torns.index') }}" class="{{ request()->routeIs('torns.*') ? 'active' : '' }}">Torns</a>
                 @else
                     {{-- Navegació simplificada per a usuaris normals --}}
                     <a href="{{ route('horaris.index') }}" class="{{ request()->routeIs('horaris.*') ? 'active' : '' }}">El meu Calendari</a>
                     <a href="{{ route('absencies.index') }}" class="{{ request()->routeIs('absencies.*') ? 'active' : '' }}">Les meves Absències</a>
+                    <a href="{{ route('fitxar.index') }}" class="{{ request()->routeIs('fitxar.*') ? 'active' : '' }}">Fitxar</a>
                 @endif
             </div>
+            
+            <!-- Botó de tancar sessió (Logout) -->
+            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                @csrf
+                <a href="#" class="btn-logout" onclick="event.preventDefault(); this.closest('form').submit();">
+                    Sortir
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </a>
+            </form>
         </div>
-        
-        <!-- Botó de tancar sessió (Logout) -->
-        <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
-            @csrf
-            <a href="#" class="btn-logout" onclick="event.preventDefault(); this.closest('form').submit();">Sortir</a>
-        </form>
     </nav>
 
     <!-- Contingut principal injectat des de les vistes -->
