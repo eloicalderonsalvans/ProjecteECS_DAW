@@ -296,7 +296,7 @@
             margin-top: 1rem;
         }
 
-        @media (max-width: 960px) {
+        @media (max-width: 1024px) {
             .fitxatge-grid {
                 grid-template-columns: 1fr;
             }
@@ -315,6 +315,7 @@
             .historial-table {
                 display: block;
                 overflow-x: auto;
+                white-space: nowrap;
             }
 
             .historial-header {
@@ -351,6 +352,7 @@
                     @csrf
                     <input type="hidden" name="ubicacio_x" id="ubicacio_x">
                     <input type="hidden" name="ubicacio_y" id="ubicacio_y">
+                    <input type="hidden" name="data_local" id="data_local">
                     <button
                         type="submit"
                         id="fitxatge-submit"
@@ -537,6 +539,12 @@
                     .then((position) => {
                         fillLocation(position);
                         sendingWithLocation = true;
+                        
+                        const now = new Date();
+                        const tzOffset = now.getTimezoneOffset() * 60000;
+                        const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 19).replace('T', ' ');
+                        document.getElementById('data_local').value = localISOTime;
+
                         setStatus('Ubicació obtinguda. Registrant el fitxatge...');
                         form.submit();
                     })

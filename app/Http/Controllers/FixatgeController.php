@@ -68,16 +68,18 @@ class FixatgeController extends Controller
         $request->validate([
             'ubicacio_x' => 'required|integer',
             'ubicacio_y' => 'required|integer',
+            'data_local' => 'required|date_format:Y-m-d H:i:s',
         ], [
             'ubicacio_x.required' => 'Cal autoritzar la geolocalització abans de fitxar.',
             'ubicacio_y.required' => 'Cal autoritzar la geolocalització abans de fitxar.',
+            'data_local.required' => 'Cal enviar la data i hora local del dispositiu.',
         ]);
 
         $user = $request->user();
         $ultimFixatge = $user->fixatges()->latest('data')->first();
         $tipus = $ultimFixatge?->check ? 'sortida' : 'entrada';
 
-        $momentFixatge = now();
+        $momentFixatge = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $request->input('data_local'));
 
         DB::transaction(function () use ($user, $tipus, $momentFixatge, $request) {
             $fixatge = Fixatge::create([
