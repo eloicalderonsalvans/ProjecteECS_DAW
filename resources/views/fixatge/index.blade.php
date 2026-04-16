@@ -62,6 +62,38 @@
             filter: drop-shadow(0 14px 20px rgba(245, 158, 11, 0.2));
         }
 
+        .fitxatge-ring-button {
+            border: none;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 1.25rem;
+            transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .fitxatge-ring-button:hover {
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        .fitxatge-ring-button:hover .fitxatge-gif {
+            filter: hue-rotate(200deg) saturate(2.2) brightness(1.05) drop-shadow(0 14px 24px rgba(37, 99, 235, 0.35));
+        }
+
+        .fitxatge-ring-button:focus-visible {
+            outline: 3px solid rgba(37, 99, 235, 0.45);
+            outline-offset: 6px;
+        }
+
+        .fitxatge-ring-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            transform: none;
+        }
+
         .fitxatge-button {
             width: 100%;
             border: none;
@@ -315,12 +347,6 @@
 
                 <div class="estat-pill">{{ $estatActual }}</div>
 
-                <img
-                    src="{{ asset('images/fixatge-ring.png') }}"
-                    alt="Icona de fitxatge"
-                    class="fitxatge-gif"
-                >
-
                 <form action="{{ route('fitxar.store') }}" method="POST" style="margin-top: 1.5rem;" id="fitxatge-form">
                     @csrf
                     <input type="hidden" name="ubicacio_x" id="ubicacio_x">
@@ -328,9 +354,16 @@
                     <button
                         type="submit"
                         id="fitxatge-submit"
-                        class="fitxatge-button {{ $esEntrada ? '' : 'fitxatge-button--sortida' }}"
+                        class="fitxatge-ring-button"
+                        aria-label="{{ $esEntrada ? 'Fitxar entrada' : 'Fitxar sortida' }}"
+                        title="{{ $esEntrada ? 'Fitxar entrada' : 'Fitxar sortida' }}"
                     >
-                        {{ $esEntrada ? 'Fitxar entrada' : 'Fitxar sortida' }}
+                        <img
+                            src="{{ asset('images/fixatge-ring.png') }}"
+                            alt=""
+                            aria-hidden="true"
+                            class="fitxatge-gif"
+                        >
                     </button>
                     <div id="fitxatge-status" class="fitxatge-status">
                         Caldrà autoritzar la ubicació per registrar el fitxatge.
