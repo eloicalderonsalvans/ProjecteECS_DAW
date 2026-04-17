@@ -75,12 +75,7 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Mètode show (actualment no utilitzat).
-     */
-    public function show(string $id)
-    { /* Per implementar si cal fitxa de detall */
-    }
+
 
     /**
      * Mostra el formulari per editar un usuari existent.

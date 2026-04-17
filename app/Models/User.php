@@ -78,6 +78,11 @@ class User extends Authenticatable
     }
 
     /**
+     * Cache memòria instància
+     */
+    protected $vacancesConsumitsCache = [];
+
+    /**
      * Calcula els dies de vacances consumits durant un any natural.
      * Compta els dies naturals de totes les absències amb motiu 'Vacances'
      * que estiguin aprovades o pendents (les pendents es reserven).
@@ -86,18 +91,34 @@ class User extends Authenticatable
     {
         $any = $any ?? now()->year;
 
-        $absencies = $this->absencies()
-            ->where('motiu', 'Vacances')
-            ->whereIn('estat', ['aprovada', 'pendent'])
-            ->where(function ($query) use ($any) {
-                $query->whereYear('data_inici', $any)
-                    ->orWhereYear('data_fi', $any);
-            })
-            ->get();
+        // Memòria cau instància per evitar consultes repetides (ex. Dashboard)
+        if (isset($this->vacancesConsumitsCache[$any])) {
+            return $this->vacancesConsumitsCache[$any];
+        }
+
+        // Si tenim les absències carregades utilitzem la col·lecció (Eager Loading)
+        if ($this->relationLoaded('absencies')) {
+            $absenciesFiltered = $this->absencies->filter(function ($absencia) use ($any) {
+                if ($absencia->motiu !== 'Vacances') return false;
+                if (!in_array($absencia->estat, ['aprovada', 'pendent'])) return false;
+                $iniciYear = \Carbon\Carbon::parse($absencia->data_inici)->year;
+                $fiYear = \Carbon\Carbon::parse($absencia->data_fi)->year;
+                return $iniciYear == $any || $fiYear == $any;
+            });
+        } else {
+            $absenciesFiltered = $this->absencies()
+                ->where('motiu', 'Vacances')
+                ->whereIn('estat', ['aprovada', 'pendent'])
+                ->where(function ($query) use ($any) {
+                    $query->whereYear('data_inici', $any)
+                        ->orWhereYear('data_fi', $any);
+                })
+                ->get();
+        }
 
         $totalDies = 0;
 
-        foreach ($absencies as $absencia) {
+        foreach ($absenciesFiltered as $absencia) {
             // Limitem l'interval dins de l'any natural
             $inici = \Carbon\Carbon::parse($absencia->data_inici);
             $fi = \Carbon\Carbon::parse($absencia->data_fi);
@@ -117,6 +138,8 @@ class User extends Authenticatable
             // +1 perquè ambdós dies són inclusius
             $totalDies += (int) ($inici->diffInDays($fi) + 1);
         }
+
+        $this->vacancesConsumitsCache[$any] = $totalDies;
 
         return $totalDies;
     }

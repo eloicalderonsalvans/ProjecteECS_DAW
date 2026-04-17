@@ -52,13 +52,6 @@ class FixatgeController extends Controller
         return view('fixatge.index', compact('ultimFixatge', 'properTipus', 'historial', 'usuaris', 'usuariSeleccionat'));
     }
 
-    /**
-     * Formulari per fitxar (Per implementar).
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Guarda un nou fitxatge i la seva entrada d'historial.
@@ -107,35 +100,4 @@ class FixatgeController extends Controller
             ->with('success', $missatge);
     }
 
-    /**
-     * Detall d'un fitxatge (Per implementar).
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Editar un fitxatge (Per implementar).
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Actualitzar un fitxatge (Per implementar).
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Eliminar un fitxatge (Per implementar).
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

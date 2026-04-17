@@ -86,6 +86,25 @@ class AbsenciaController extends Controller
         $targetUserId = $user->isAdmin() && $request->has('user_id') ? $request->user_id : $user->id;
         $targetUser = User::findOrFail($targetUserId);
 
+        // Comprovem solapament d'absències: L'usuari no pot demanar unes vacances on ja en té unes pendents o aprovades
+        $hasOverlap = Absencia::where('user_id', $targetUserId)
+            ->whereIn('estat', ['pendent', 'aprovada'])
+            ->where(function ($query) use ($request) {
+                $query->whereBetween('data_inici', [$request->data_inici, $request->data_fi])
+                      ->orWhereBetween('data_fi', [$request->data_inici, $request->data_fi])
+                      ->orWhere(function ($q) use ($request) {
+                          $q->where('data_inici', '<=', $request->data_inici)
+                            ->where('data_fi', '>=', $request->data_fi);
+                      });
+            })
+            ->exists();
+
+        if ($hasOverlap) {
+            return redirect()->back()
+                ->withErrors(['data_inici' => "Ja tens una absència sol·licitada o aprovada que coincideix amb aquestes dates."])
+                ->withInput();
+        }
+
         // Comprovem que l'usuari tingui com a mínim un torn assignat entre aquestes dates
         $hasShifts = \App\Models\Horari::where('user_id', $targetUserId)
             ->whereBetween('data', [$request->data_inici, $request->data_fi])

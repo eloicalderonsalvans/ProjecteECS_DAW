@@ -51,12 +51,7 @@ class TornController extends Controller
         return redirect()->route('torns.index')->with('success', 'Torn creat correctament!');
     }
 
-    /**
-     * Mètode show (actualment no utilitzat).
-     */
-    public function show(string $id)
-    { /* No utilitzat */
-    }
+
 
     /**
      * Mostra el formulari per editar un torn existent.
