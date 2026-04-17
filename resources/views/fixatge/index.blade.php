@@ -11,12 +11,16 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            width: 100%;
+            align-items: stretch;
         }
 
         .fitxatge-grid {
             display: grid;
-            grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+            grid-template-columns: 1fr 1.5fr;
             gap: 1.5rem;
+            align-items: start;
+            width: 100%;
         }
 
         .fitxatge-card,
@@ -52,11 +56,14 @@
             margin: 0.75rem 0 1.5rem;
             color: #64748b;
             line-height: 1.6;
+            font-size: clamp(0.9rem, 1vw + 0.5rem, 1rem);
         }
 
         .fitxatge-gif {
-            width: 180px;
-            height: 180px;
+            width: 100%;
+            max-width: 180px;
+            height: auto;
+            aspect-ratio: 1/1;
             object-fit: contain;
             image-rendering: pixelated;
             transition: filter 0.2s ease;
@@ -305,29 +312,110 @@
         @media (max-width: 1024px) {
             .fitxatge-grid {
                 grid-template-columns: 1fr;
+                margin: 0;
+                width: 100%;
             }
         }
 
         @media (max-width: 640px) {
+            .fitxatge-page {
+                gap: 0.75rem;
+                padding: 0;
+            }
 
             .fitxatge-card,
             .historial-card {
-                padding: 1.25rem;
+                padding: 1.25rem 0.75rem;
+                border-radius: 0.75rem;
+                width: 100%;
             }
 
             .fitxatge-title {
-                font-size: 1.6rem;
+                font-size: 1.4rem;
             }
 
-            .historial-table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
+            .fitxatge-gif {
+                max-width: 140px;
             }
 
             .historial-header {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 1.25rem;
+            }
+
+            .historial-filter-select {
+                min-width: 0;
+                width: 100%;
+            }
+
+            @media (max-width: 768px) {
+
+                .historial-table,
+                .historial-table thead,
+                .historial-table tbody,
+                .historial-table th,
+                .historial-table td,
+                .historial-table tr {
+                    display: block;
+                    width: 100%;
+                }
+
+                .historial-table thead {
+                    display: none;
+                }
+
+                .historial-table tr {
+                    margin-bottom: 1rem;
+                    padding: 1rem;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 0.75rem;
+                    background: #f8fafc;
+                }
+
+                .historial-table td {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-bottom: 1px solid #edf2f7;
+                    padding: 0.5rem 0;
+                    text-align: right !important;
+                }
+
+                .historial-table td::before {
+                    content: attr(data-label);
+                    font-weight: 800;
+                    color: #64748b;
+                    text-transform: uppercase;
+                    font-size: 0.7rem;
+                    text-align: left;
+                    margin-right: 1rem;
+                }
+
+                .historial-table td:last-child {
+                    border-bottom: none;
+                }
+
+                .col-data,
+                .col-dispositiu {
+                    display: flex !important;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .col-usuari {
+                    min-width: 120px;
+                    overflow: visible;
+                }
+            }
+
+            .fitxatge-meta-row {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .fitxatge-meta-value {
+                text-align: left;
             }
         }
     </style>
@@ -425,13 +513,13 @@
                         <thead>
                             <tr>
                                 @if (auth()->user()->isAdmin())
-                                    <th>Usuari</th>
+                                    <th class="col-usuari">Usuari</th>
                                 @endif
                                 <th>Tipus</th>
-                                <th>Data</th>
+                                <th class="col-data">Data</th>
                                 <th>Hora</th>
                                 @if (auth()->user()->isAdmin())
-                                    <th>Dispositiu</th>
+                                    <th class="col-dispositiu">Dispositiu</th>
                                 @endif
                             </tr>
                         </thead>
@@ -439,18 +527,21 @@
                             @foreach ($historial as $registre)
                                 <tr>
                                     @if (auth()->user()->isAdmin())
-                                        <td>{{ $registre->user?->nom }} {{ $registre->user?->cognom }}</td>
+                                        <td class="col-usuari" data-label="Usuari">
+                                            <strong>{{ $registre->user?->nom }} {{ $registre->user?->cognom }}</strong>
+                                        </td>
                                     @endif
-                                    <td>
+                                    <td data-label="Tipus">
                                         <span
                                             class="historial-badge {{ $registre->check ? 'historial-badge--entrada' : 'historial-badge--sortida' }}">
                                             {{ $registre->check ? 'Entrada' : 'Sortida' }}
                                         </span>
                                     </td>
-                                    <td>{{ $registre->data->format('d/m/Y') }}</td>
-                                    <td>{{ $registre->data->format('H:i:s') }}</td>
+                                    <td class="col-data" data-label="Data">{{ $registre->data->format('d/m/Y') }}</td>
+                                    <td data-label="Hora">{{ $registre->data->format('H:i:s') }}</td>
                                     @if (auth()->user()->isAdmin())
-                                        <td>{{ $registre->dispositiu ?: 'No disponible' }}</td>
+                                        <td class="col-dispositiu" data-label="Dispositiu">
+                                            {{ $registre->dispositiu ?: 'No disponible' }}</td>
                                     @endif
                                 </tr>
                             @endforeach

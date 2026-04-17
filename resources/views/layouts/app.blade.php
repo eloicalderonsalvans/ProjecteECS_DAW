@@ -28,12 +28,18 @@
             --danger-light: #fef2f2;
         }
 
+        *, *:before, *:after {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
             margin: 0;
             padding: 0;
+            width: 100%;
+            overflow-x: hidden;
         }
 
         /* Barra de navegació */
@@ -57,7 +63,7 @@
         .nav-group {
             display: flex;
             align-items: center;
-            gap: 2rem;
+            gap: 1rem;
         }
 
         /* Insignia de l'usuari */
@@ -144,6 +150,18 @@
             padding: 0 2rem;
         }
 
+        @media (max-width: 640px) {
+            .main-content {
+                margin-top: 5rem !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding: 0 0.5rem !important;
+                max-width: none !important;
+                width: 100% !important;
+                display: block !important;
+            }
+        }
+
         /* Missatge d'error per permisos */
         .alert-error {
             background: #fef2f2;
@@ -176,7 +194,7 @@
             display: none;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .navbar {
                 padding: 0.75rem 1.25rem;
             }
@@ -234,7 +252,7 @@
         <div class="nav-header">
             <!-- Nom de l'usuari autenticat + badge de rol -->
             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <span class="user-badge">{{ \Illuminate\Support\Facades\Auth::user()->nom }}</span>
+                <span class="user-badge">{{ auth()->user()->nom }} {{ auth()->user()->cognom }}</span>
                 @if(\Illuminate\Support\Facades\Auth::user()->isAdmin())
                     <span class="role-badge role-badge--admin">Admin</span>
                 @else
