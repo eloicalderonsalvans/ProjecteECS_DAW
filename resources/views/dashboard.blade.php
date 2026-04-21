@@ -14,13 +14,22 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-100">
-                <div class="mb-4">
-                    <h3 class="text-2xl font-bold mb-2">
-                        Hola, {{ auth()->user()->nom }}! 👋
-                    </h3>
-                    <p class="text-gray-600 italic">
-                        {{ __("Benvingut de nou al teu panell de control.") }}
-                    </p>
+                <div class="flex items-center gap-5 mb-4">
+                    @if(auth()->user()->getAvatarUrl())
+                        <img src="{{ auth()->user()->getAvatarUrl() }}" alt="Foto de perfil" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 4px solid #dbeafe; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); flex-shrink: 0;">
+                    @else
+                        <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #4f46e5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.25rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 4px solid #dbeafe; flex-shrink: 0;">
+                            {{ auth()->user()->getInicials() }}
+                        </div>
+                    @endif
+                    <div>
+                        <h3 class="text-2xl font-bold mb-1">
+                            Hola, {{ auth()->user()->nom }}! 👋
+                        </h3>
+                        <p class="text-gray-600 italic">
+                            {{ __("Benvingut de nou al teu panell de control.") }}
+                        </p>
+                    </div>
                 </div>
             </div>
 

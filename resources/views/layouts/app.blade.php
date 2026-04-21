@@ -252,6 +252,13 @@
         <div class="nav-header">
             <!-- Nom de l'usuari autenticat + badge de rol -->
             <div style="display: flex; align-items: center; gap: 0.5rem;">
+                @if(auth()->user()->getAvatarUrl())
+                    <img src="{{ auth()->user()->getAvatarUrl() }}" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.5);">
+                @else
+                    <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #60a5fa, #4f46e5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.7rem; border: 2px solid rgba(255,255,255,0.5);">
+                        {{ auth()->user()->getInicials() }}
+                    </div>
+                @endif
                 <span class="user-badge">{{ auth()->user()->nom }} {{ auth()->user()->cognom }}</span>
                 @if(\Illuminate\Support\Facades\Auth::user()->isAdmin())
                     <span class="role-badge role-badge--admin">Admin</span>

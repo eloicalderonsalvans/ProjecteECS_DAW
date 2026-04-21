@@ -36,9 +36,16 @@
                     @foreach ($users as $user)
                     <tr class="hover:bg-blue-50 transition-colors">
                         <td class="p-4">
-                            <!-- Enllaç al detall de l'usuari -->
-                            <a href="{{ route('users.show', $user->id) }}" class="text-blue-600 font-semibold hover:text-blue-800 hover:underline">
-                                {{ $user->nom }} {{ $user->cognom }}
+                            <!-- Enllaç al detall de l'usuari amb avatar -->
+                            <a href="{{ route('users.show', $user->id) }}" class="flex items-center gap-3 text-blue-600 font-semibold hover:text-blue-800">
+                                @if($user->getAvatarUrl())
+                                    <img src="{{ $user->getAvatarUrl() }}" alt="{{ $user->nom }}" class="w-9 h-9 rounded-full object-cover border-2 border-blue-100">
+                                @else
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-extrabold flex-shrink-0">
+                                        {{ $user->getInicials() }}
+                                    </div>
+                                @endif
+                                <span class="hover:underline">{{ $user->nom }} {{ $user->cognom }}</span>
                             </a>
                         </td>
                         <td class="p-4 text-gray-600">{{ $user->DNI }}</td>

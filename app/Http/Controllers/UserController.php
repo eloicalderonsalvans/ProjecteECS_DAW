@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -48,6 +49,7 @@ class UserController extends Controller
             'data_alta' => 'required|date',
             'department_id' => 'nullable|exists:department,id',
             'role' => 'required|string|max:255',
+            'foto_perfil' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             // 'actiu' ja no es gestiona manualment, es controla automàticament en fitxar
         ]);
 
@@ -64,9 +66,15 @@ class UserController extends Controller
             $user->role = $request->role;
             $user->actiu = 0; // L'usuari comença inactiu; passarà a actiu automàticament en fitxar entrada
 
+            // 3. Gestió de la foto de perfil
+            if ($request->hasFile('foto_perfil')) {
+                $path = $request->file('foto_perfil')->store('fotos_perfil', 'public');
+                $user->foto_perfil = $path;
+            }
+
             $user->save();
 
-            // 3. Redirecció si tot ha anat bé
+            // 4. Redirecció si tot ha anat bé
             return redirect()->route('users.index')->with('success', 'Usuari creat amb èxit!');
 
         } catch (\Exception $e) {
@@ -107,6 +115,7 @@ class UserController extends Controller
             'data_alta' => 'required|date',
             'department_id' => 'nullable|exists:department,id',
             'role' => 'required|string|max:255',
+            'foto_perfil' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         // Assignació de nous valors
@@ -124,6 +133,22 @@ class UserController extends Controller
             $user->contrassenya = $request->contrassenya;
         }
 
+        // Gestió de la foto de perfil
+        if ($request->hasFile('foto_perfil')) {
+            // Eliminem la foto antiga si existeix
+            if ($user->foto_perfil) {
+                Storage::disk('public')->delete($user->foto_perfil);
+            }
+            $path = $request->file('foto_perfil')->store('fotos_perfil', 'public');
+            $user->foto_perfil = $path;
+        }
+
+        // Opció per eliminar la foto
+        if ($request->boolean('eliminar_foto') && $user->foto_perfil) {
+            Storage::disk('public')->delete($user->foto_perfil);
+            $user->foto_perfil = null;
+        }
+
         $user->save();
 
         return redirect()->route('users.index')->with('success', 'Usuari actualitzat correctament.');
@@ -135,6 +160,12 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = \App\Models\User::findOrFail($id);
+
+        // Eliminem la foto de perfil si n'hi ha
+        if ($user->foto_perfil) {
+            Storage::disk('public')->delete($user->foto_perfil);
+        }
+
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'Usuari eliminat amb èxit.');

@@ -41,7 +41,27 @@ class User extends Authenticatable
         'contrassenya',
         'data_alta',
         'actiu',
+        'foto_perfil',
     ];
+
+    /**
+     * Retorna la URL de la foto de perfil o un avatar generat amb les inicials.
+     */
+    public function getAvatarUrl(): ?string
+    {
+        if ($this->foto_perfil) {
+            return asset('storage/' . $this->foto_perfil);
+        }
+        return null;
+    }
+
+    /**
+     * Retorna les inicials de l'usuari (per a l'avatar per defecte).
+     */
+    public function getInicials(): string
+    {
+        return strtoupper(mb_substr($this->nom, 0, 1) . mb_substr($this->cognom, 0, 1));
+    }
 
     /**
      * Atributs ocults en la serialització (JSON, etc).
