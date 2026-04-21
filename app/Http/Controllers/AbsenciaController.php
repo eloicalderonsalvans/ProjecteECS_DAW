@@ -55,9 +55,8 @@ class AbsenciaController extends Controller
         $diesConsumits = $user->diesVacancesConsumits();
 
         if ($user->isAdmin()) {
-            $users = User::where('actiu', true)->get();
-            $aprovadors = User::where('actiu', true)
-                ->where(function ($query) {
+            $users = User::all();
+            $aprovadors = User::where(function ($query) {
                     $query->whereIn('role', ['admin', 'cap_departament'])
                         ->orWhereHas('departament', function ($q) {
                             $q->where('nom', 'LIKE', '%Recursos Humans%');
@@ -77,19 +76,27 @@ class AbsenciaController extends Controller
     {
         $user = auth()->user();
 
+        // 1. Validació bàsica de les dades d'entrada HTML (evitar injeccions o dates incoherents)
         $request->validate([
             'motiu' => 'required|string|in:Vacances,Baixa mèdica,Assumptes propis,Formació,Altres',
             'data_inici' => 'required|date',
             'data_fi' => 'required|date|after_or_equal:data_inici',
         ]);
 
+        // Determinem a quin usuari estem aplicant l'absència. 
+        // PER QUÈ: Si ets admin i selecciones "Pepe" al desplegable, li has d'assignar a en Pepe.
+        // Si ets treballador ras, sempre seràs "tu" ($user->id) obviant si manipulen el formulari.
         $targetUserId = $user->isAdmin() && $request->has('user_id') ? $request->user_id : $user->id;
         $targetUser = User::findOrFail($targetUserId);
 
-        // Comprovem solapament d'absències: L'usuari no pot demanar unes vacances on ja en té unes pendents o aprovades
+        // 2. Comprovem solapament d'absències
+        // PER QUÈ: L'usuari no pot demanar unes vacances on ja en té unes de pendents o aprovades,
+        // això causaria dades corruptes a la base de dades si s'encavalquen.
         $hasOverlap = Absencia::where('user_id', $targetUserId)
             ->whereIn('estat', ['pendent', 'aprovada'])
             ->where(function ($query) use ($request) {
+                // Comprova si la data d'inici sol·licitada, o la final cauen al bell mig d'una altra,
+                // o pitjor, si la nova petició se les empassa totalment.
                 $query->whereBetween('data_inici', [$request->data_inici, $request->data_fi])
                       ->orWhereBetween('data_fi', [$request->data_inici, $request->data_fi])
                       ->orWhere(function ($q) use ($request) {
@@ -105,7 +112,9 @@ class AbsenciaController extends Controller
                 ->withInput();
         }
 
-        // Comprovem que l'usuari tingui com a mínim un torn assignat entre aquestes dates
+        // 3. Comprovem que l'usuari tingui com a mínim un torn assignat entre aquestes dates
+        // PER QUÈ: No pots demanar un dia de festa de dissabte si normalment ja no tens el torn
+        // assingat en dissabte (evitem que els dies de vacances restants baixin estúpidament)
         $hasShifts = \App\Models\Horari::where('user_id', $targetUserId)
             ->whereBetween('data', [$request->data_inici, $request->data_fi])
             ->exists();
@@ -116,15 +125,18 @@ class AbsenciaController extends Controller
                 ->withInput();
         }
 
-        // Validació de dies de vacances disponibles
+        // 4. Validació de dies de vacances disponibles per a la persona
+        // Només validem matemàticament si demanen "Vacances", ja que la "Baixa Mèdica" és infinita o per forca major
         if ($request->motiu === 'Vacances') {
             $dataInici = Carbon::parse($request->data_inici);
             $dataFi = Carbon::parse($request->data_fi);
+            // Matemàtica simple: Dies finals - inicis + 1 per comptar amb el dia actual integre.
             $diesSollicitats = $dataInici->diffInDays($dataFi) + 1;
 
             $anyInici = $dataInici->year;
             $diesRestants = $targetUser->diesVacancesRestants($anyInici);
 
+            // Rebutgem operació si no hi ha prou "saldo"
             if ($diesSollicitats > $diesRestants) {
                 return redirect()->back()
                     ->withErrors(['motiu' => "No tens prou dies de vacances. Dies sol·licitats: {$diesSollicitats}. Dies disponibles: {$diesRestants}."])
@@ -132,8 +144,10 @@ class AbsenciaController extends Controller
             }
         }
 
+        // 5. Finalment es realitza l'escriptura (INSERT) al DB
         if ($user->isAdmin()) {
-            // Admin pot assignar a qualsevol usuari
+            // Admin pot assignar i deixar l'estat en "aprovada" si també des del menú tria
+            // un manager o 'ell mateix' com aprovador automàticament
             $request->validate([
                 'user_id' => 'required|exists:users,id',
                 'aprobat_per' => 'nullable|string',
@@ -149,7 +163,8 @@ class AbsenciaController extends Controller
                 'estat' => $request->aprobat_per ? 'aprovada' : 'pendent',
             ]);
         } else {
-            // Usuari normal: forcem el seu propi ID i estat pendent
+            // Usuari normal: forcem el seu propi ID i bloquegem sempre com a "pendent" perquè
+            // l'empresa (Admin) ho hagi de verificar i confirmar l'autorització oficialment.
             Absencia::create([
                 'user_id' => $user->id,
                 'motiu' => $request->motiu,
@@ -168,9 +183,8 @@ class AbsenciaController extends Controller
     public function edit(string $id)
     {
         $absencia = Absencia::findOrFail($id);
-        $users = User::where('actiu', true)->get();
-        $aprovadors = User::where('actiu', true)
-            ->where(function ($query) {
+        $users = User::all();
+        $aprovadors = User::where(function ($query) {
                 $query->whereIn('role', ['admin', 'cap_departament'])
                     ->orWhereHas('departament', function ($q) {
                         $q->where('nom', 'LIKE', '%Recursos Humans%');

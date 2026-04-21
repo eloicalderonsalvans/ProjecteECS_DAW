@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Fixatge;
 use App\Models\H_Fixatge;
+use App\Models\Horari;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,13 +27,17 @@ class FixatgeController extends Controller
 
         $properTipus = $ultimFixatge?->check ? 'sortida' : 'entrada';
 
+        // Comprova si l'usuari té un torn assignat avui
+        $teTornAvui = Horari::where('user_id', $user->id)
+            ->where('data', now()->toDateString())
+            ->exists();
+
         $historialQuery = Fixatge::query()
             ->with('user')
             ->orderByDesc('data');
 
         if ($user->isAdmin()) {
-            $usuaris = User::where('actiu', true)
-                ->orderBy('nom')
+            $usuaris = User::orderBy('nom')
                 ->orderBy('cognom')
                 ->get();
 
@@ -49,7 +54,7 @@ class FixatgeController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('fixatge.index', compact('ultimFixatge', 'properTipus', 'historial', 'usuaris', 'usuariSeleccionat'));
+        return view('fixatge.index', compact('ultimFixatge', 'properTipus', 'historial', 'usuaris', 'usuariSeleccionat', 'teTornAvui'));
     }
 
 
@@ -69,6 +74,18 @@ class FixatgeController extends Controller
         ]);
 
         $user = $request->user();
+
+        // Validació: no es pot fitxar sense torn assignat avui
+        $teTornAvui = Horari::where('user_id', $user->id)
+            ->where('data', now()->toDateString())
+            ->exists();
+
+        if (!$teTornAvui) {
+            return redirect()
+                ->route('fitxar.index')
+                ->withErrors(['torn' => 'No pots fitxar perquè no tens cap torn assignat per avui.']);
+        }
+
         $ultimFixatge = $user->fixatges()->latest('data')->first();
         $tipus = $ultimFixatge?->check ? 'sortida' : 'entrada';
 
@@ -89,6 +106,10 @@ class FixatgeController extends Controller
                 'fitxatge_id' => $fixatge->id,
                 'data' => $momentFixatge,
             ]);
+
+            // Actualitza l'estat actiu/inactiu de l'usuari
+            $user->actiu = $tipus === 'entrada';
+            $user->save();
         });
 
         $missatge = $tipus === 'entrada'

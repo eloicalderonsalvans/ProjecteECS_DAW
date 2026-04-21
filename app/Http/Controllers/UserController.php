@@ -48,7 +48,7 @@ class UserController extends Controller
             'data_alta' => 'required|date',
             'department_id' => 'nullable|exists:department,id',
             'role' => 'required|string|max:255',
-            'actiu' => 'sometimes|boolean',
+            // 'actiu' ja no es gestiona manualment, es controla automàticament en fitxar
         ]);
 
         try {
@@ -62,7 +62,7 @@ class UserController extends Controller
             $user->data_alta = $request->data_alta;
             $user->department_id = $request->department_id;
             $user->role = $request->role;
-            $user->actiu = $request->has('actiu') ? 1 : 0; // Si no ve el checkbox, s'assigna 0
+            $user->actiu = 0; // L'usuari comença inactiu; passarà a actiu automàticament en fitxar entrada
 
             $user->save();
 
@@ -117,7 +117,7 @@ class UserController extends Controller
         $user->data_alta = $request->data_alta;
         $user->department_id = $request->department_id;
         $user->role = $request->role;
-        $user->actiu = $request->has('actiu') ? 1 : 0;
+        // $user->actiu no es modifica aquí; es gestiona automàticament en fitxar entrada/sortida
 
         // Només actualitzem la contrasenya si l'usuari n'ha escrit una de nova
         if ($request->filled('contrassenya')) {

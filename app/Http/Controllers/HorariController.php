@@ -29,7 +29,9 @@ class HorariController extends Controller
     }
 
     /**
-     * Obté els esdeveniments d'un usuari en format JSON per a FullCalendar.
+     * Obté els esdeveniments d'un usuari en format JSON per a la llibreria FullCalendar.
+     * PER QUÈ: FullCalendar no sap llegir models d'Eloquent, necessita un format específic d'Array 
+     * amb els camps 'start', 'end', 'title' i els respectius colors. Aquesta API transforma les dades de Laravel.
      *
      * @param  int  $userId  ID de l'usuari seleccionat.
      */
@@ -38,6 +40,7 @@ class HorariController extends Controller
         $user = auth()->user();
 
         // Control d'accés: un usuari normal només pot veure les seves pròpies dades
+        // PER QUÈ: Evitem que un empleat es passi de llest canviant el paràmetre de la URL per espiar horaris d'un company
         if (! $user->isAdmin() && (int) $userId !== $user->id) {
             return response()->json([], 403);
         }
@@ -47,14 +50,16 @@ class HorariController extends Controller
             ->with('torn')
             ->get();
 
-        // Transformem les dades al format que entén la llibreria FullCalendar
+        // Transformem els horaris en la graella requerida per FullCalendar
         $events = $horaris->map(function ($h) {
+            // Agafem les hores del bloc o predeterminem unes per defecte si el torn no concorda
             $horaEntrada = $h->torn->hora_entrada ?? '08:00:00';
             $horaSortida = $h->torn->hora_sortida ?? '17:00:00';
 
             return [
                 'id' => $h->id,
                 'title' => $h->torn->nom ?? 'S/N',
+                // Unim la data amb la hora en format ISO 8601 (Ex: 2026-05-18T08:00:00) per compatibilitat amb JavaScript
                 'start' => $h->data.'T'.$horaEntrada,
                 'end' => $h->data.'T'.$horaSortida,
                 'backgroundColor' => $h->torn->color ?? '#3788d8',
@@ -103,52 +108,77 @@ class HorariController extends Controller
     }
 
     /**
-     * Guarda les assignacions d'horari a la base de dades (assignació massiva per rang de dates).
+     * Guarda les assignacions d'horari a la base de dades utilitzant inserció massiva.
+     * PER QUÈ: Permetre a l'admin pintar setmanes senceres assignant de forma automàtica.
      */
     public function store(Request $request)
     {
         // 1. Validació de les dades d'entrada
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'torn_id' => 'required|exists:torns,id',
+            'torn_ids' => 'required|array|min:1',
+            'torn_ids.*' => 'exists:torns,id',
             'data_inici' => 'required|date',
-            'data_fi' => 'required|date|after_or_equal:data_inici',
+            'data_fi' => 'required_without:is_indefinite|nullable|date|after_or_equal:data_inici',
             'assign_mode' => 'required|in:all,weekdays_only,weekends_only',
+            'is_rotative' => 'sometimes|boolean',
+            'is_indefinite' => 'sometimes|boolean',
+            'rotation_weeks' => 'sometimes|integer|min:1',
         ]);
 
-        // 2. Busquem el torn per obtenir les seves hores i propietats
-        $torn = Torn::find($request->torn_id);
-
         $inici = \Carbon\Carbon::parse($request->data_inici);
-        $fi = \Carbon\Carbon::parse($request->data_fi);
+        // Si és indefinit, assignem fins a 1 any des de la data d'inici
+        $fi = $request->boolean('is_indefinite') 
+            ? $inici->copy()->addYear() 
+            : \Carbon\Carbon::parse($request->data_fi);
+            
         $assignMode = $request->input('assign_mode', 'all');
 
-        // 3. Creació massiva dia a dia en el rang especificat
+        $isRotative = $request->boolean('is_rotative');
+        $tornIds = $request->collect('torn_ids')->values()->all();
+        $rotationWeeks = (int) $request->input('rotation_weeks', 1);
+        $dataIniciOriginal = $inici->copy();
+
+        // 3. Bucle mentre estiguem per sota o igual a la data final seleccionada
         while ($inici <= $fi) {
+            // Obtenim en quin dia cau
             $isWeekend = in_array($inici->dayOfWeek, [0, 6]);
 
+            // Si ha marcat "només entre setmana" i casualment estem generant dissabte/diumenge -> saltem el dia!
             if ($assignMode === 'weekdays_only' && $isWeekend) {
                 $inici->addDay();
                 continue;
             }
 
+            // O a l'inversa
             if ($assignMode === 'weekends_only' && ! $isWeekend) {
                 $inici->addDay();
                 continue;
             }
 
-            // Utilitzem updateOrCreate per evitar duplicats per al mateix dia i usuari
+            // Seleccionem el torn actual segons la rotació
+            if ($isRotative) {
+                // Calculem els dies des de la data d'inici per canviar cada 7 dies * rotationWeeks
+                // Fem servir l'absolut per evitar claus negatives en el modulo
+                $diesDiferencia = $dataIniciOriginal->diffInDays($inici);
+                $indexTorn = (int) ($diesDiferencia / (7 * $rotationWeeks)) % count($tornIds);
+                $currentTornId = $tornIds[$indexTorn];
+            } else {
+                $currentTornId = $tornIds[0];
+            }
+
+            // Utilitzem updateOrCreate per evitar duplicats
             Horari::updateOrCreate(
                 [
                     'user_id' => $request->user_id,
                     'data' => $inici->format('Y-m-d'),
                 ],
                 [
-                    'torn_id' => $request->torn_id,
+                    'torn_id' => $currentTornId,
                 ]
             );
 
-            // Avancem al següent dia
+            // Avancem la màquina del temps 24h endavant
             $inici->addDay();
         }
 

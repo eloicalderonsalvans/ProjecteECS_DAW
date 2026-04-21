@@ -72,8 +72,10 @@
                 </div>
 
                 <div class="flex items-center mt-6">
-                    <input type="checkbox" name="actiu" value="1" id="actiu" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                    <label for="actiu" class="ml-2 block text-sm text-gray-900 font-medium">Usuari Actiu</label>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        ○ Inactiu
+                    </span>
+                    <span class="ml-2 text-xs text-gray-400 italic">L'usuari passarà a actiu automàticament quan fitxi la seva entrada.</span>
                 </div>
             </div>
 

@@ -33,6 +33,9 @@
 
         .fitxatge-card {
             padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
         }
 
@@ -168,6 +171,7 @@
             display: grid;
             gap: 0.75rem;
             text-align: left;
+            width: 100%;
         }
 
         .fitxatge-meta-row {
@@ -443,6 +447,14 @@
 
                 <div class="estat-pill">{{ $estatActual }}</div>
 
+                @if (!$teTornAvui)
+                    <div style="background: #fef2f2; border-left: 4px solid #ef4444; color: #991b1b; padding: 1rem 1.25rem; border-radius: 0 0.75rem 0.75rem 0; font-weight: 700; margin-top: 1.5rem; text-align: left; width: 100%; box-sizing: border-box;">
+                        ⚠️ No pots fitxar perquè no tens cap torn assignat per avui.
+                    </div>
+                    <div style="margin-top: 1.5rem; opacity: 0.4; pointer-events: none; display: flex; justify-content: center; width: 100%;">
+                        <img src="{{ asset('images/fixatge-ring.png') }}" alt="" aria-hidden="true" class="fitxatge-gif">
+                    </div>
+                @else
                 <form action="{{ route('fitxar.store') }}" method="POST" style="margin-top: 1.5rem;" id="fitxatge-form">
                     @csrf
                     <input type="hidden" name="ubicacio_x" id="ubicacio_x">
@@ -457,6 +469,7 @@
                         Caldrà autoritzar la ubicació per registrar el fitxatge.
                     </div>
                 </form>
+                @endif
 
                 <div class="fitxatge-meta">
                     <div class="fitxatge-meta-row">
