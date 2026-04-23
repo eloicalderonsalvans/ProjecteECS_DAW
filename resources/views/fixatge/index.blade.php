@@ -538,10 +538,21 @@
                         </thead>
                         <tbody>
                             @foreach ($historial as $registre)
-                                <tr>
+                                <tr class="group">
                                     @if (auth()->user()->isAdmin())
                                         <td class="col-usuari" data-label="Usuari">
-                                            <strong>{{ $registre->user?->nom }} {{ $registre->user?->cognom }}</strong>
+                                            <div class="flex items-center gap-3">
+                                                @if($registre->user?->getAvatarUrl())
+                                                    <img src="{{ $registre->user->getAvatarUrl() }}" alt="Foto" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #dbeafe; box-shadow: 0 1px 2px rgba(0,0,0,0.05); flex-shrink: 0;">
+                                                @else
+                                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #4f46e5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.7rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 2px solid #dbeafe; flex-shrink: 0;">
+                                                        {{ $registre->user?->getInicials() }}
+                                                    </div>
+                                                @endif
+                                                <span class="text-blue-600 font-bold text-sm group-hover:underline">
+                                                    {{ $registre->user?->nom }} {{ $registre->user?->cognom }}
+                                                </span>
+                                            </div>
                                         </td>
                                     @endif
                                     <td data-label="Tipus">

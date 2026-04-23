@@ -88,10 +88,21 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @foreach ($absencies as $absencia)
-                    <tr class="hover:bg-blue-50 transition-colors">
+                    <tr class="hover:bg-blue-50 transition-colors group">
                         @if(auth()->user()->isAdmin())
-                            <td class="p-4 text-gray-900 font-medium">
-                                {{ $absencia->user->nom ?? 'Desconegut' }} {{ $absencia->user->cognom ?? '' }}
+                            <td class="p-4">
+                                <div class="flex items-center gap-3">
+                                    @if($absencia->user->getAvatarUrl())
+                                        <img src="{{ $absencia->user->getAvatarUrl() }}" alt="Foto" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #dbeafe; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0;">
+                                    @else
+                                        <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #4f46e5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 2px solid #dbeafe; flex-shrink: 0;">
+                                            {{ $absencia->user->getInicials() }}
+                                        </div>
+                                    @endif
+                                    <span class="text-blue-600 font-bold text-sm group-hover:underline">
+                                        {{ $absencia->user->nom ?? 'Desconegut' }} {{ $absencia->user->cognom ?? '' }}
+                                    </span>
+                                </div>
                             </td>
                         @endif
                         <td class="p-4 text-gray-600">

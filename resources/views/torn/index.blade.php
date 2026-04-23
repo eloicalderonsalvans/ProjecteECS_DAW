@@ -41,15 +41,15 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @foreach($torns as $torn)
-                        <tr class="hover:bg-gray-50 transition-colors">
+                        <tr class="hover:bg-gray-50 transition-colors group">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
                                 #{{ $torn->id }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 <div class="w-8 h-8 rounded-full border border-gray-300 shadow-sm" style="background-color: {{ $torn->color }}"></div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold uppercase">
-                                {{ $torn->nom }}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <span class="text-blue-600 font-bold uppercase group-hover:underline">{{ $torn->nom }}</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-700">
                                 {{ $torn->hora_entrada ? \Carbon\Carbon::parse($torn->hora_entrada)->format('H:i') : '—' }}

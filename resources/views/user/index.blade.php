@@ -34,19 +34,18 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @foreach ($users as $user)
-                    <tr class="hover:bg-blue-50 transition-colors">
+                    <tr class="hover:bg-blue-50 transition-colors group">
                         <td class="p-4">
-                            <!-- Enllaç al detall de l'usuari amb avatar -->
-                            <a href="{{ route('users.show', $user->id) }}" class="flex items-center gap-3 text-blue-600 font-semibold hover:text-blue-800">
+                            <div class="flex items-center gap-3">
                                 @if($user->getAvatarUrl())
-                                    <img src="{{ $user->getAvatarUrl() }}" alt="{{ $user->nom }}" class="w-9 h-9 rounded-full object-cover border-2 border-blue-100">
+                                    <img src="{{ $user->getAvatarUrl() }}" alt="Foto de perfil" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 3px solid #dbeafe; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); flex-shrink: 0;">
                                 @else
-                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-extrabold flex-shrink-0">
+                                    <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #4f46e5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 3px solid #dbeafe; flex-shrink: 0;">
                                         {{ $user->getInicials() }}
                                     </div>
                                 @endif
-                                <span class="hover:underline">{{ $user->nom }} {{ $user->cognom }}</span>
-                            </a>
+                                <span class="text-blue-600 font-bold group-hover:underline">{{ $user->nom }} {{ $user->cognom }}</span>
+                            </div>
                         </td>
                         <td class="p-4 text-gray-600">{{ $user->DNI }}</td>
                         <td class="p-4 text-gray-600">{{ $user->email }}</td>
