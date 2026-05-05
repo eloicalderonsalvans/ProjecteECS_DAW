@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-sm">
-        
+    <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-sm">
+
         <div class="flex justify-between items-center mb-6 border-b pb-4">
             <h1 class="text-2xl font-bold text-gray-800">Usuaris del Sistema</h1>
-            
-            <div class="flex items-center gap-4">
-                
 
-                <a href="{{ route('users.create') }}" 
-                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm shadow-sm transition-colors">
+            <div class="flex items-center gap-4">
+
+
+                <a href="{{ route('users.create') }}"
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm shadow-sm transition-colors">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
@@ -34,49 +34,53 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @foreach ($users as $user)
-                    <tr class="hover:bg-blue-50 transition-colors group">
-                        <td class="p-4">
-                            <div class="flex items-center gap-3">
-                                @if($user->getAvatarUrl())
-                                    <img src="{{ $user->getAvatarUrl() }}" alt="Foto de perfil" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 3px solid #dbeafe; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); flex-shrink: 0;">
-                                @else
-                                    <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #4f46e5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 3px solid #dbeafe; flex-shrink: 0;">
-                                        {{ $user->getInicials() }}
-                                    </div>
-                                @endif
-                                <span class="text-blue-600 font-bold group-hover:underline">{{ $user->nom }} {{ $user->cognom }}</span>
-                            </div>
-                        </td>
-                        <td class="p-4 text-gray-600">{{ $user->DNI }}</td>
-                        <td class="p-4 text-gray-600">{{ $user->email }}</td>
-                        <td class="p-4 text-gray-600">
-                            {{ $user->departament->nom ?? 'Sense assignar' }}
-                        </td>
-                        <td class="p-4 text-center">
-                            <!-- Badge d'estat: verd si està actiu (ha fitxat entrada), vermell si no -->
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->actiu ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                                {{ $user->actiu ? 'Actiu' : 'Inactiu' }}
-                            </span>
-                        </td>
-                        <td class="p-4">
-                            <div class="flex justify-end gap-2">
-                                <!-- Botons d'acció: Editar i Eliminar -->
-                                <a href="{{ route('users.edit', $user->id) }}" 
-                                   class="inline-flex items-center px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-md transition-colors shadow-sm">
-                                    Editar
-                                </a>
-                                <form action="{{ route('users.destroy', $user->id) }}" method="POST" 
-                                      onsubmit="return confirm('Estàs segur que vols eliminar aquest usuari?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" 
+                        <tr class="hover:bg-blue-50 transition-colors group">
+                            <td class="p-4">
+                                <div class="flex items-center gap-3">
+                                    @if($user->getAvatarUrl())
+                                        <img src="{{ $user->getAvatarUrl() }}" alt="Foto de perfil"
+                                            style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 3px solid #dbeafe; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); flex-shrink: 0;">
+                                    @else
+                                        <div
+                                            style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #4f46e5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 3px solid #dbeafe; flex-shrink: 0;">
+                                            {{ $user->getInicials() }}
+                                        </div>
+                                    @endif
+                                    <span class="text-blue-600 font-bold group-hover:underline">{{ $user->nom }}
+                                        {{ $user->cognom }}</span>
+                                </div>
+                            </td>
+                            <td class="p-4 text-gray-600">{{ $user->DNI }}</td>
+                            <td class="p-4 text-gray-600">{{ $user->email }}</td>
+                            <td class="p-4 text-gray-600">
+                                {{ $user->departament->nom ?? 'Sense assignar' }}
+                            </td>
+                            <td class="p-4 text-center">
+                                <!-- Badge d'estat: verd si està actiu (ha fitxat entrada), vermell si no -->
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->actiu ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                    {{ $user->actiu ? 'Actiu' : 'Inactiu' }}
+                                </span>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex justify-end gap-2">
+                                    <!-- Botons d'acció: Editar i Eliminar -->
+                                    <a href="{{ route('users.edit', $user->id) }}"
+                                        class="inline-flex items-center px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-md transition-colors shadow-sm">
+                                        Editar
+                                    </a>
+                                    <form action="{{ route('users.destroy', $user->id) }}" method="POST"
+                                        onsubmit="return confirm('Estàs segur que vols eliminar aquest usuari?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
                                             class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors shadow-sm">
-                                        Eliminar
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>

@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="md:col-span-2">
-                    <label for="aprobat_per" class="block text-sm font-bold text-gray-700 mb-1">Aprovat per</label>
+                    <label for="aprobat_per" class="block text-sm font-bold text-gray-700 mb-1">Gestionat per</label>
                     <select name="aprobat_per" id="aprobat_per" 
                             class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
                         <option value="">-- Pendent d'aprovar --</option>
