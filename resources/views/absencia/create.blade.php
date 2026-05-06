@@ -136,7 +136,6 @@
                                 </option>
                             @endforeach
                         </select>
-                        <p class="text-xs text-gray-500 mt-1 italic">Si selecciones un aprovador, l'absència quedarà aprovada directament.</p>
                     </div>
                 @else
                     {{-- Missatge informatiu per a l'usuari normal --}}

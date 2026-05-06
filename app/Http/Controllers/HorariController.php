@@ -41,7 +41,7 @@ class HorariController extends Controller
 
         // Control d'accés: un usuari normal només pot veure les seves pròpies dades
         // PER QUÈ: Evitem que un empleat es passi de llest canviant el paràmetre de la URL per espiar horaris d'un company
-        if (! $user->isAdmin() && (int) $userId !== $user->id) {
+        if (!$user->isAdmin() && (int) $userId !== $user->id) {
             return response()->json([], 403);
         }
 
@@ -60,8 +60,8 @@ class HorariController extends Controller
                 'id' => $h->id,
                 'title' => $h->torn->nom ?? 'S/N',
                 // Unim la data amb la hora en format ISO 8601 (Ex: 2026-05-18T08:00:00) per compatibilitat amb JavaScript
-                'start' => $h->data.'T'.$horaEntrada,
-                'end' => $h->data.'T'.$horaSortida,
+                'start' => $h->data . 'T' . $horaEntrada,
+                'end' => $h->data . 'T' . $horaSortida,
                 'backgroundColor' => $h->torn->color ?? '#3788d8',
                 'borderColor' => $h->torn->color ?? '#3788d8',
             ];
@@ -76,7 +76,7 @@ class HorariController extends Controller
         $absenciaEvents = $absencies->map(function ($a) {
             $inici = \Carbon\Carbon::parse($a->data_inici);
             $fi = \Carbon\Carbon::parse($a->data_fi);
-            
+
             return [
                 'id' => 'abs_' . $a->id,
                 'title' => 'Absència: ' . $a->motiu,
@@ -128,10 +128,10 @@ class HorariController extends Controller
 
         $inici = \Carbon\Carbon::parse($request->data_inici);
         // Si és indefinit, assignem fins a 1 any des de la data d'inici
-        $fi = $request->boolean('is_indefinite') 
-            ? $inici->copy()->addYear() 
+        $fi = $request->boolean('is_indefinite')
+            ? $inici->copy()->addYear()
             : \Carbon\Carbon::parse($request->data_fi);
-            
+
         $assignMode = $request->input('assign_mode', 'all');
 
         $isRotative = $request->boolean('is_rotative');
@@ -151,7 +151,7 @@ class HorariController extends Controller
             }
 
             // O a l'inversa
-            if ($assignMode === 'weekends_only' && ! $isWeekend) {
+            if ($assignMode === 'weekends_only' && !$isWeekend) {
                 $inici->addDay();
                 continue;
             }

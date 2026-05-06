@@ -119,8 +119,10 @@ class User extends Authenticatable
         // Si tenim les absències carregades utilitzem la col·lecció (Eager Loading)
         if ($this->relationLoaded('absencies')) {
             $absenciesFiltered = $this->absencies->filter(function ($absencia) use ($any) {
-                if ($absencia->motiu !== 'Vacances') return false;
-                if (!in_array($absencia->estat, ['aprovada', 'pendent'])) return false;
+                if ($absencia->motiu !== 'Vacances')
+                    return false;
+                if (!in_array($absencia->estat, ['aprovada', 'pendent']))
+                    return false;
                 $iniciYear = \Carbon\Carbon::parse($absencia->data_inici)->year;
                 $fiYear = \Carbon\Carbon::parse($absencia->data_fi)->year;
                 return $iniciYear == $any || $fiYear == $any;

@@ -57,11 +57,11 @@ class AbsenciaController extends Controller
         if ($user->isAdmin()) {
             $users = User::all();
             $aprovadors = User::where(function ($query) {
-                    $query->whereIn('role', ['admin', 'cap_departament'])
-                        ->orWhereHas('departament', function ($q) {
-                            $q->where('nom', 'LIKE', '%Recursos Humans%');
-                        });
-                })->get();
+                $query->whereIn('role', ['admin', 'cap_departament'])
+                    ->orWhereHas('departament', function ($q) {
+                        $q->where('nom', 'LIKE', '%Recursos Humans%');
+                    });
+            })->get();
         }
 
         $diesTotal = $user->totalDiesVacances();
@@ -98,11 +98,11 @@ class AbsenciaController extends Controller
                 // Comprova si la data d'inici sol·licitada, o la final cauen al bell mig d'una altra,
                 // o pitjor, si la nova petició se les empassa totalment.
                 $query->whereBetween('data_inici', [$request->data_inici, $request->data_fi])
-                      ->orWhereBetween('data_fi', [$request->data_inici, $request->data_fi])
-                      ->orWhere(function ($q) use ($request) {
-                          $q->where('data_inici', '<=', $request->data_inici)
-                            ->where('data_fi', '>=', $request->data_fi);
-                      });
+                    ->orWhereBetween('data_fi', [$request->data_inici, $request->data_fi])
+                    ->orWhere(function ($q) use ($request) {
+                    $q->where('data_inici', '<=', $request->data_inici)
+                        ->where('data_fi', '>=', $request->data_fi);
+                });
             })
             ->exists();
 
@@ -119,7 +119,7 @@ class AbsenciaController extends Controller
             ->whereBetween('data', [$request->data_inici, $request->data_fi])
             ->exists();
 
-        if (! $hasShifts) {
+        if (!$hasShifts) {
             return redirect()->back()
                 ->withErrors(['data_inici' => "No es pot demanar una absència si no es té cap torn assignat en aquestes dates."])
                 ->withInput();
@@ -185,11 +185,11 @@ class AbsenciaController extends Controller
         $absencia = Absencia::findOrFail($id);
         $users = User::all();
         $aprovadors = User::where(function ($query) {
-                $query->whereIn('role', ['admin', 'cap_departament'])
-                    ->orWhereHas('departament', function ($q) {
-                        $q->where('nom', 'LIKE', '%Recursos Humans%');
-                    });
-            })->get();
+            $query->whereIn('role', ['admin', 'cap_departament'])
+                ->orWhereHas('departament', function ($q) {
+                    $q->where('nom', 'LIKE', '%Recursos Humans%');
+                });
+        })->get();
 
         return view('absencia.edit', compact('absencia', 'users', 'aprovadors'));
     }
@@ -276,7 +276,7 @@ class AbsenciaController extends Controller
         $absencia = Absencia::findOrFail($id);
         $user = auth()->user();
 
-        if (! $user->isAdmin()) {
+        if (!$user->isAdmin()) {
             // Verificar que és la seva pròpia absència i que està pendent
             if ($absencia->user_id !== $user->id || $absencia->estat !== 'pendent') {
                 return redirect()->route('absencies.index')
