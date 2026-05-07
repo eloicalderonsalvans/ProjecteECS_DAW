@@ -126,12 +126,17 @@ class AbsenciaController extends Controller
         }
 
         // 4. Validació de dies de vacances disponibles per a la persona
-        // Només validem matemàticament si demanen "Vacances", ja que la "Baixa Mèdica" és infinita o per forca major
+        // Només validem matemàticament si demanen "Vacances", ja que la "Baixa Mèdica" és infinita o per força major
         if ($request->motiu === 'Vacances') {
             $dataInici = Carbon::parse($request->data_inici);
             $dataFi = Carbon::parse($request->data_fi);
-            // Matemàtica simple: Dies finals - inicis + 1 per comptar amb el dia actual integre.
-            $diesSollicitats = $dataInici->diffInDays($dataFi) + 1;
+
+            // Comptem només els dies en els quals l'usuari té un torn assignat.
+            // PER QUÈ: Si el treballador no treballa els caps de setmana o un dia concret,
+            // no té sentit descomptar-los del saldo de vacances.
+            $diesSollicitats = \App\Models\Horari::where('user_id', $targetUserId)
+                ->whereBetween('data', [$request->data_inici, $request->data_fi])
+                ->count();
 
             $anyInici = $dataInici->year;
             $diesRestants = $targetUser->diesVacancesRestants($anyInici);
@@ -139,7 +144,7 @@ class AbsenciaController extends Controller
             // Rebutgem operació si no hi ha prou "saldo"
             if ($diesSollicitats > $diesRestants) {
                 return redirect()->back()
-                    ->withErrors(['motiu' => "No tens prou dies de vacances. Dies sol·licitats: {$diesSollicitats}. Dies disponibles: {$diesRestants}."])
+                    ->withErrors(['motiu' => "No tens prou dies de vacances. Dies sol·licitats (laborables): {$diesSollicitats}. Dies disponibles: {$diesRestants}."])
                     ->withInput();
             }
         }
@@ -227,11 +232,9 @@ class AbsenciaController extends Controller
         if ($absencia->motiu === 'Vacances') {
             $empleat = User::findOrFail($absencia->user_id);
             $dataInici = Carbon::parse($absencia->data_inici);
-            $dataFi = Carbon::parse($absencia->data_fi);
-            $diesAbsencia = $dataInici->diffInDays($dataFi) + 1;
 
-            // Calculem restants sense comptar aquesta absència (ja és pendent, ja es compta)
-            // Simplement verifiquem que els consumits no superin el màxim
+            // Calculem restants sense comptar aquesta absència (ja és pendent, ja es compta).
+            // Amb la nova lògica, diesVacancesRestants ja té en compte només els dies amb torn.
             $diesRestants = $empleat->diesVacancesRestants($dataInici->year);
 
             // Si l'absència ja es comptava com a pendent, els dies restants ja la tenen en compte.

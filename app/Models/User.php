@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Horari;
 
 class User extends Authenticatable
 {
@@ -150,15 +151,21 @@ class User extends Authenticatable
 
             // Si l'absència comença abans de l'any, limitem al 1 de gener
             if ($inici->lt($iniciAny)) {
-                $inici = $iniciAny;
+                $inici = $iniciAny->copy();
             }
             // Si l'absència acaba després de l'any, limitem al 31 de desembre
             if ($fi->gt($fiAny)) {
-                $fi = $fiAny;
+                $fi = $fiAny->copy();
             }
 
-            // +1 perquè ambdós dies són inclusius
-            $totalDies += (int) ($inici->diffInDays($fi) + 1);
+            // Comptem només els dies en els quals l'usuari té un torn assignat.
+            // PER QUÈ: Si el treballador no treballa els caps de setmana o un dilluns concret,
+            // no té sentit descomptar-los del saldo de vacances.
+            $diesAmbTorn = Horari::where('user_id', $this->id)
+                ->whereBetween('data', [$inici->toDateString(), $fi->toDateString()])
+                ->count();
+
+            $totalDies += $diesAmbTorn;
         }
 
         $this->vacancesConsumitsCache[$any] = $totalDies;
